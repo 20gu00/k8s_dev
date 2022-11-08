@@ -1,0 +1,30 @@
+reflector是DeltaFifo的生产者
+/root/kubernetes/staging/src/k8s.io/client-go/tools/cache/delta_fifo.go
+/root/kubernetes/staging/src/k8s.io/client-go/tools/cache/fifo.go
+queue队列 store pop addifnotpresent hassync是否同步
+
+每个delta含有type和资源对象(runtime.Object),比如add和pod1
+每个deltaFifo含有queue和item,queue中是一个个key,比如pod1key,pod2key,item是一个queue中的值作为方便做索引的key的数组,值是同一个资源对象的一系列操作,比如pod1key->[delta1,delta2...]
+同样的操作回去重
+deltafifo
+--------------------------------------------------------------
+ queue  pod1key pod2key...                                   |
+                                                             |
+ item pod1key--->[delta1,delta2                              |
+                                                             |
+                                                             |
+                                                             |
+                                                             |
+--------------------------------------------------------------
+
+delta
+---------------------------
+type   add                 |
+Object pod1                |
+                           |
+----------------------------
+
+pop从deltafifo中弹出数据消费
+
+reflector list -> deltafifo的replace
+reflector watch -> deltafifo的add update delete等

@@ -1,0 +1,7 @@
+apiVersion: etcd.cjq.io/v1alpha1
+kind: EtcdCluster
+metadata:
+  name: etcd-demo
+spec:
+ size: 3
+ image: 010101010007/etcd:3.4.20

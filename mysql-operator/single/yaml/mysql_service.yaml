@@ -1,0 +1,16 @@
+#定义mysql的Service
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: svc-mysql
+  name:  mysql #svc-mysql
+spec:
+  selector:
+    app: mysql
+  type: NodePort
+  ports:
+    - port: 3306
+      protocol: TCP
+      targetPort: 3306
+      nodePort: 31234

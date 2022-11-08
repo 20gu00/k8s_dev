@@ -1,0 +1,9 @@
+apiVersion: "stable.example.com/v1"  #GV
+kind: CronTab
+metadata:
+  name: my-new-cron-object
+  namespace: kube-system
+spec:
+  cronSpec: "* * * * */5"  #分时日月周,每5周
+  image: test-image
+  replicas: 10

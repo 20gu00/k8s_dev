@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 5Gi
+  hostPath:
+    path: /data/mysql
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem  #文件系统模式
+  storageClassName: default
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv1
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 5Gi
+  hostPath:
+    path: /data/mysql1
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem  #文件系统模式
+  storageClassName: default
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv2
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 5Gi
+  hostPath:
+    path: /data/mysql2
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem  #文件系统模式
+  storageClassName: default

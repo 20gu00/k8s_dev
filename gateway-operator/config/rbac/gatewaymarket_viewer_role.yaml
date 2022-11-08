@@ -1,0 +1,20 @@
+# permissions for end users to view gatewaymarkets.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: gatewaymarket-viewer-role
+rules:
+- apiGroups:
+  - gogateway.cjq.io
+  resources:
+  - gatewaymarkets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - gogateway.cjq.io
+  resources:
+  - gatewaymarkets/status
+  verbs:
+  - get

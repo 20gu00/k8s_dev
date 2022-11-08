@@ -1,0 +1,5 @@
+InClusterConfig或者kubeconfig方式获取到*rest.Config
+->初始化clientset对象,能够识别schema
+->curd
+真正和api通信客户端是restclient(http客户端)
+/root/kubernetes/staging/src/k8s.io/client-go/kubernetes/clientset.go

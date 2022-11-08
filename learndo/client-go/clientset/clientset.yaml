@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: clientset
+spec:
+  containers:
+    - name: clientset-container
+      image: clientset-image
+      imagePullPolicy: IfNotPresent

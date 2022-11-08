@@ -1,0 +1,12 @@
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: etcd-pdb
+  labels:
+    pdb: etcd
+spec:
+  minAvailable: 2  #至少两个,etcd是分布式集群
+  #Pod Disruption Budget (pod 中断 预算) 简称PDB，含义其实是终止pod前通过 labelSelector 机制获取正常运行的pod数目的限制，目的是对自愿中断的保护措施。
+  selector:
+    matchLabels:
+      app: etcd

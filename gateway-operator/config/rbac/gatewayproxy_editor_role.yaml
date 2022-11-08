@@ -1,0 +1,24 @@
+# permissions for end users to edit gatewayproxies.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: gatewayproxy-editor-role
+rules:
+- apiGroups:
+  - gogateway.cjq.io
+  resources:
+  - gatewayproxies
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - gogateway.cjq.io
+  resources:
+  - gatewayproxies/status
+  verbs:
+  - get

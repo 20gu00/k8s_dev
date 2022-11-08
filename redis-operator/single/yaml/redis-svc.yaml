@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis #redis-service
+  labels:
+    name: redis-service
+spec:
+  type: NodePort #ClusterIP   # 如果需要集群外部访问,这里改为NodePort
+  ports:
+    - port: 6379
+      protocol: TCP   #TCP
+      targetPort: 6379
+      name: redis-6379
+  selector:
+    name: redis   # 这里填写Deployment/metadata/name 的值

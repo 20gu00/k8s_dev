@@ -1,0 +1,59 @@
+优化
+
+
+
+
+公司域名 module名
+operator-sdk init --domain cjq.io --license apache2 --owner "cjq" --repo github.com/20gu00/operator-sdk-demo
+go mod tidy
+go get github.com/go-logr/logr@v0.1.0
+GVK(自定义的group)
+operator-sdk create api --group app --version v1 --kind Myapp
+go mod tidy
+make 生成代码
+make insrtall 安装crd资源
+make run 运行controller
+make run ENABLE_WEBHOOKS=false  默认开启webhook
+/root/k8s_operator/learndo/operator-sdk/demo/config/crd/bases/app.cjq.io_myapps.yaml
+已经创建的资源比如pod,删除controller不会删除
+删除kubectl delete -f app_v1_myapp.yaml
+make docker-build IMG=010101010007/op-sdk2:v1
+make docker-push IMG=010101010007/op-sdk2:v1
+make deploy IMG=010101010007/op-sdk2:v1
+kubectl create ns demo-system 资源放在这 /root/k8s_operator/learndo/operator-sdk2/demo/config/default/kustomization.yaml
+
+[root@master1 demo]# make deploy IMG=010101010007/op-sdk2:v1
+/root/go/bin/controller-gen "crd:trivialVersions=true" rbac:roleName=manager-role webhook paths="./..." output:crd:artifacts:config=config/crd/bases
+cd config/manager && /root/go/bin/kustomize edit set image controller=010101010007/op-sdk2:v1
+2022/11/07 22:00:38 Fixed the missing field by adding apiVersion: kustomize.config.k8s.io/v1beta1
+Fixed the missing field by adding kind: Kustomization
+/root/go/bin/kustomize build config/default | kubectl apply -f -
+Warning: kubectl apply should be used on resource created by either kubectl create --save-config or kubectl apply
+namespace/demo-system configured
+Warning: apiextensions.k8s.io/v1beta1 CustomResourceDefinition is deprecated in v1.16+, unavailable in v1.22+; use apiextensions.k8s.io/v1 CustomResourceDefinition
+customresourcedefinition.apiextensions.k8s.io/myapps.app.cjq.io configured
+role.rbac.authorization.k8s.io/demo-leader-election-role created
+clusterrole.rbac.authorization.k8s.io/demo-manager-role created
+clusterrole.rbac.authorization.k8s.io/demo-proxy-role created
+Warning: rbac.authorization.k8s.io/v1beta1 ClusterRole is deprecated in v1.17+, unavailable in v1.22+; use rbac.authorization.k8s.io/v1 ClusterRole
+clusterrole.rbac.authorization.k8s.io/demo-metrics-reader created
+rolebinding.rbac.authorization.k8s.io/demo-leader-election-rolebinding created
+clusterrolebinding.rbac.authorization.k8s.io/demo-manager-rolebinding created
+clusterrolebinding.rbac.authorization.k8s.io/demo-proxy-rolebinding created
+service/demo-controller-manager-metrics-service created
+deployment.apps/demo-controller-manager created
+
+docker pull rancher/kube-rbac-proxy:v0.5.0
+docker tag rancher/kube-rbac-proxy:v0.5.0 gcr.io/kubebuilder/kube-rbac-proxy:v0.5.0
+
+[root@master1 demo]# kubectl get pod -n demo-system
+NAME                                       READY   STATUS    RESTARTS   AGE
+demo-controller-manager-7944f695d8-nwwg9   2/2     Running   0          4m58s
+
+/root/k8s_operator/learndo/operator-sdk2/demo/config/default/manager_auth_proxy_patch.yaml
+
+kubectl logs demo-controller-manager-7944f695d8-nwwg9 -c manager -n demo-system
+
+记得要make install  案例
+
+kubectl apply -f pod-controller.yaml

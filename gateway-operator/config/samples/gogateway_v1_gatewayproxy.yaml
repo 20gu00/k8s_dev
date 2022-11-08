@@ -1,0 +1,7 @@
+apiVersion: gogateway.cjq.io/v1
+kind: GatewayProxy
+metadata:
+  name: gatewayproxy-demo
+spec:
+  replicas: 2
+  image: 010101010007/gateway-proxy

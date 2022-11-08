@@ -1,0 +1,17 @@
+apiVersion: settings.k8s.io/v1alpha1
+kind: PodPreset
+metadata:
+  name: time-preset
+  namespace: demo-system
+spec:
+  selector:
+    matchLabels:
+  volumeMounts:
+  - name: localtime
+    mountPath: /etc/localtime
+  volumes:
+  - name: localtime
+    hostPath:
+      path: /etc/localtime
+
+

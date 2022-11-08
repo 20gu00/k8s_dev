@@ -1,0 +1,20 @@
+go get k8s.io/apimachinery
+go get k8s.io/client-go
+go get k8s.io/code-generator
+-d
+export GOPROXY https://goproxy.cn
+go mod tidy
+go mod vendor
+将依赖收集到vendor中
+go build -o bin/crd-controller .
+go run main.go controller.go
+controller无名称空间
+crd也是一种k8s的资源
+
+
+[root@master1 learndo]# kubectl get crontab
+NAME                 AGE
+my-new-cron-object   13s
+[root@master1 learndo]# kubectl get crontab -n kube-system
+NAME                 AGE
+my-new-cron-object   7s

@@ -1,0 +1,15 @@
+使用代码生成器的脚本
+
+在该目录下面新建 tools.go 文件，添加 code-generator 依赖，因为在没有代码使用 code-generator 时，go module 默认不会为我们依赖此包
+https://github.com/kubernetes/sample-controller hack 官方脚本
+verify-codegen.sh 脚本，用来校验生成的代码是否是最新的
+chmod u+x hack/update-codegen.sh
+./hack/update-codegen.sh
+
+Generating deepcopy funcs
+Generating clientset for stableexamplecom:v1 at github.com/20gu00/crd-controller/pkg/client/clientset
+Generating listers for stableexamplecom:v1 at github.com/20gu00/crd-controller/pkg/client/listers
+Generating informers for stableexamplecom:v1 at github.com/20gu00/crd-controller/pkg/client/informers
+
+(lister informer clientset)(indexer)
+pkg/apis/stable/v1 目录下面多了一个zz_generated.deepcopy.go 文件,在 pkg/client 文件夹下生成了 clientset和 informers 和 listers 三个目录，有了这几个自动生成的客户端相关操作包，我们就可以去访问 CRD 资源了，可以和使用内置的资源对象一样去对 CronTab 进行 List 和 Watch 操作了。

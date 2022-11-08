@@ -1,0 +1,4 @@
+[root@master1 one]# kubectl get pod -n redis-test
+NAME   READY   STATUS     RESTARTS   AGE
+rd-0   0/1     Init:0/2   0          33s
+两个初始化容器,一个容器

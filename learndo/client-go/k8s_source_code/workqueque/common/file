@@ -1,0 +1,3 @@
+/root/kubernetes/staging/src/k8s.io/client-go/util/workqueue/queue.go
+通通队列存放任意数据
+dirty定义队列需要处理的数据,去重,相同的数据只需要处理一次即可

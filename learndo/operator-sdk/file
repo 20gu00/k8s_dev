@@ -1,0 +1,14 @@
+公司域名 module名
+operator-sdk init --domain cjq.io --license apache2 --owner "cjq" --repo github.com/20gu00/operator-sdk-demo
+go mod tidy
+go get github.com/go-logr/logr@v0.1.0
+GVK(自定义的group)
+operator-sdk create api --group app --version v1 --kind Myapp
+go mod tidy
+make 生成代码
+make insrtall 安装crd资源
+make run 运行controller
+make run ENABLE_WEBHOOKS=false  默认开启webhook
+/root/k8s_operator/learndo/operator-sdk/demo/config/crd/bases/app.cjq.io_myapps.yaml
+已经创建的资源比如pod,删除controller不会删除
+删除kubectl delete -f app_v1_myapp.yaml

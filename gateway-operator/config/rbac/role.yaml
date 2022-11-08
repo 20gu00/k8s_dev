@@ -1,0 +1,70 @@
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: manager-role
+rules:
+- apiGroups:
+  - apps
+  resources:
+  - deploymrnts
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+- apiGroups:
+  - gogateway.cjq.io
+  resources:
+  - gatewaymarkets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - gogateway.cjq.io
+  resources:
+  - gatewaymarkets/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - gogateway.cjq.io
+  resources:
+  - gatewayproxies
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - gogateway.cjq.io
+  resources:
+  - gatewayproxies/status
+  verbs:
+  - get
+  - patch
+  - update

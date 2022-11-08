@@ -1,0 +1,4 @@
+本地go run main.go
+go build -o bin/clientset clientset.go
+kubeconfig->clientset->curd schema
+docker build -f Dockerfile -o clientset-image .

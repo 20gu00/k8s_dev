@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: redis
+  name: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: redis
+  template:
+    metadata:
+      labels:
+        name: redis
+    spec:
+      containers:
+        - name: redis-6379
+          image: redis:5.0
+          volumeMounts:
+            - name: configmap-volume
+              mountPath: /usr/local/etc/redis/redis_6379.conf
+              subPath: redis_6379.conf
+            - name: redis-6379
+              mountPath: "/data"
+          command:
+            - "redis-server"
+          args:
+            - /usr/local/etc/redis/redis_6379.conf
+      volumes:
+        - name: configmap-volume
+          configMap:
+            name: redis-cm
+            items:
+              - key: redis_6379.conf
+                path: redis_6379.conf
+        - name: redis-6379
+          persistentVolumeClaim:
+            claimName: redis-6379-pvc  # 这里填写pvc的名称

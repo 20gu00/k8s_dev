@@ -1,0 +1,10 @@
+domain: cjq.io
+repo: github.com/cjq/etcd-operator
+resources:
+- group: etcd
+  kind: EtcdCluster
+  version: v1alpha1
+- group: etcd
+  kind: EtcdBackup
+  version: v1alpha1
+version: "2"

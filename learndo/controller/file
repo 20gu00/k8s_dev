@@ -1,0 +1,6 @@
+获取期望状态和当前状态,比较,不断watch,调谐
+k8s的controller而不是client-go架构中的controller
+内置的资源对象的控制器(watch pod或者deployment等等),crd+controller->watch crd资源构建
+crd,k8s为了提高扩展性,让开发者自定义资源的一种方式,crd可以动态注册到集群,用户可以像使用pod一样使用kubectl操作资源对象
+crd只是资源的定义,还需要一个对应的controller去监听crd的各种事件来操作对应的业务逻辑
+资源的定义增删改查只是写入etcd,需要相应的控制器比如deployment-controller才能进行相应的业务逻辑创建出相应的pod

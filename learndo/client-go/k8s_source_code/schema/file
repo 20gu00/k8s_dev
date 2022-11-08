@@ -1,0 +1,24 @@
+/root/kubernetes/staging/src/k8s.io
+
+staging会同步一些其他的库
+
+/root/kubernetes/staging/src/k8s.io/api/apps/v1beta1/doc.go  代码生成器使用
+
+/root/kubernetes/staging/src/k8s.io/api/apps/v1beta1/zz_generated.deepcopy.go deepcopy-gen代码生成器自动生成
+
+/root/kubernetes/staging/src/k8s.io/apimachinery/pkg/runtime/interfaces.go Object定义
+
+/root/kubernetes/staging/src/k8s.io/apimachinery/pkg/apis/meta/v1/meta.go
+
+/root/kubernetes/staging/src/k8s.io/api/apps/v1beta1/types_swagger_doc_generated.go api文档
+
+/root/kubernetes/staging/src/k8s.io/api/apps/v1beta1/register.go  资源的注册到schema中
+
+/root/kubernetes/staging/src/k8s.io/apimachinery/pkg/runtime/scheme.go  全局的schema配置
+
+/root/kubernetes/staging/src/k8s.io/client-go/kubernetes/scheme/register.go 
+
+type.go zz_generated.deepcopy.go 实现Onject
+register.go AddToSchema 将当前的资源对象添加到schema中
+client-go-register 全局的Schema
+clientset能够识别schema

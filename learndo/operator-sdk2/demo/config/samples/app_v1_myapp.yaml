@@ -1,0 +1,21 @@
+apiVersion: app.cjq.io/v1
+kind: Myapp
+metadata:
+  name: myapp-sample
+  #用于新旧对比(字符串)
+  #可以不写,会判断,是否出发更新事件
+  #annotations:
+    #old-spec: "size: 2
+    #image: nginx:1.7.9
+    #ports:
+    #  - port: 80
+    #    targetPort: 80
+    #    nodePort: 30002"
+spec:
+  #containers
+  size: 1
+  image: nginx:1.7.9
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30002  #指定了svc nodeport,注意端口冲突

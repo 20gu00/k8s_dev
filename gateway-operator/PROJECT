@@ -1,0 +1,10 @@
+domain: cjq.io
+repo: github.com/20gu00/gateway-operator
+resources:
+- group: gogateway
+  kind: GatewayProxy
+  version: v1
+- group: gogateway
+  kind: GatewayMarket
+  version: v1
+version: "2"

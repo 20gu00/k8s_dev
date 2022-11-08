@@ -1,0 +1,24 @@
+# permissions for end users to edit gatewaymarkets.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: gatewaymarket-editor-role
+rules:
+- apiGroups:
+  - gogateway.cjq.io
+  resources:
+  - gatewaymarkets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - gogateway.cjq.io
+  resources:
+  - gatewaymarkets/status
+  verbs:
+  - get

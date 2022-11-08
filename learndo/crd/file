@@ -1,0 +1,3 @@
+kubectl apply -f crd.yaml
+namespace级别 GVR
+/apis/stable/example.com/v1/namespace/*/crontabs/

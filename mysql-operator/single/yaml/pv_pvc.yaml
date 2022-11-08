@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv-volume
+  # pv是没有namespace属性的，它是一种跨namespace的共享资源
+spec:
+  storageClassName: "mysql-storage"
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /data/mysql  # 指定nfs的挂载点
+    server: 192.168.23.232  # 指定nfs服务地址，这是我node1的主机ip
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: mysql-storage
+provisioner: kubernetes.io/no-provisioner
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pv-claim
+spec:
+  storageClassName: mysql-storage
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 20Gi

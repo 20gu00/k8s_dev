@@ -1,0 +1,141 @@
+在生产环境中，为了整个集群的高可用，etcd 正常都会以集群方式部署，避免单点故障。引导 etcd 集群的启动有以下三种机制：
+
+- 静态
+- etcd 动态发现
+- DNS 发现
+
+静态启动 etcd 集群要求每个成员都知道集群中的另一个成员。 在许多情况下，群集成员的 IP 可能未知，在这些情况下，可以在发现服务的帮助下引导 etcd 集群。
+
+官方提供的工具来生成 etcd 集群的配置： http://play.etcd.io/install(静态部署)
+
+多台机器多个节点部署集群,节点数目最好奇数,才能方便选举(分布式系统要求至少一半节点正常运行)
+也可以一台机器不同端口模拟节点
+
+github下载release或者自己编译(etcd etcdctl)
+etcdctl version: 3.4.15
+API version: 3.4
+
+本地部署(不同端口):
+非https
+/////////////参数解释/////////////////////
+- `--name` ：节点名称
+
+    默认值：`default`
+
+    环境变量：`ETCD_NAME`
+
+    说明：这个值和 `--initial-cluster` 参数中的 key 值一一对应，如果在集群环境中，name 必须是唯一的，建议用主机名称或者机器 ID。
+
+- `--data-dir`：数据存储目录
+
+    默认值：`${name}.etcd`
+
+    环境变量：`ETCD_DATA_DIR`
+
+- `--wal-dir`：存放预写日志目录
+
+    默认值：""
+
+    环境变量：`ETCD_WAL_DIR`
+
+    说明：最大的作用是记录了整个数据变化的全部历程，如果未配置则共用 `--data-dir` 文件所在目录。
+
+- `--snapshot-count`：数据快照触发数量
+
+    默认值：100000
+
+    环境变量：ETCD_SNAPSHOT_COUNT
+
+    说明：etcd 处理指定次数的事务提交后，生产数据快照
+
+- `--heartbeat-interval`： 客户端连接后的心跳间隔（毫秒）
+
+    默认值：100
+
+    环境变量：ETCD_HEARTBEAT_INTERVAL
+
+- `--election-timeout`**：**集群选举的超时时间
+
+    默认值：1000
+
+    环境变量：ETCD_ELECTION_TIMEOUT
+
+- `--max-snapshots`：最大快照数量，0表示不限制
+
+    默认值：5
+
+    环境变量：ETCD_MAX_SNAPSHOTS
+
+- `--max-wals`：最大预写日志数量，0表示不限制
+
+    默认值：5
+
+    环境变量：ETCD_MAX_WAL
+
+- `--listen-peer-urls`：本节点使用，用于监听其他节点发送信息的地址，地址写法是 `scheme://IP:port`
+
+    默认值：`http://localhost:2380`
+
+    环境变量：ETCD_LISTEN_PEER_URL
+
+    示例： `http://10.0.0.1:2380`
+
+    无效的示例：http://example.com:2380 (域名对绑定无效)
+
+- `--listen-client-urls`：本节点使用，用于 etcd 客户端通信的 url，写法是 `scheme://IP:port`，可以多个并用逗号隔开
+
+    默认值：`http://localhost:2379`
+
+    示例：`http://10.0.0.1:2379`
+
+    无效的示例：`http://example.com:2379` (域名对绑定无效)
+
+- `--initial-advertise-peer-urls`：其他节点通过该地址与本节点进行数据交换（选举，同步）的地址，URL 可以使用域名地址
+
+    默认值：`http://localhost:2380`
+
+    环境变量：ETCD_INITIAL_ADVERTISE_PEER_URL
+
+    说明：与 `--listener-peer-urls` 不同在于 listener-peer-urls 用于请求客户端的接入控制，initial-advertise-peer-urls 是告知其他集群节点访问哪个 URL，一般来说，initial-advertise-peer-urlsl 将是 listene-peer-urls 的子集。静态配置方式下，该参数值一定要同时在 `--initial-cluster` 参数中存在
+
+- `--advertise-client-urls` ：用于通知其他 ETCD 节点，客户端接入本节点的监听地址，一般来说 advertise-client-urls 是 listen-client-urls 子集
+
+    默认值：`http://localhost:2379`
+
+    环境变量：ETCD_ADVERTISE_CLIENT_URL
+
+- `--initial-cluster` ：集群所有节点配置，多个用逗号隔开
+
+    默认值：`http://localhost:2380`
+
+    环境变量：ETCD_INITIAL_CLUSTER
+
+    说明：key 是所提供的每个节点的 `--name` 标志的值
+
+- `--initial-cluster-state` ：节点初始化方式
+
+    默认值：new
+
+    环境变量：ETCD_INITIAL_CLUSTER_STATE
+
+    说明：`new` 表示如果没有集群不存在，创建新集群，`existing` 表示如果集群不存在，节点将处于加入集群失败状态。
+
+- `--initial-cluster-token` ：集群唯一标识
+
+    默认值：etcd-cluster
+
+    环境变量：ETCD_INITIAL_CLUSTER_TOKEN
+
+    说明：相同标识的节点将视为在一个集群内
+////////////////参数解释////////////////////
+
+
+部署在kubernetes:
+k8s源码提供案例test/e2e/testing-manifests/statefulset/etcd
+
+go mod tidy(go mod vendor,开启vendor,将依赖添加到vendor)
+make install 安装crd(config/crd),将数据添加进crd(crd设置相关的)
+make run
+kubectl apply -f config/samples/aaa
+
+go get go.etcd.io/etcd/clientv3

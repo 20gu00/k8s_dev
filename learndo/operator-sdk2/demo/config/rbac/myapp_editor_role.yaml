@@ -1,0 +1,24 @@
+# permissions for end users to edit myapps.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: myapp-editor-role
+rules:
+- apiGroups:
+  - app.cjq.io
+  resources:
+  - myapps
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - app.cjq.io
+  resources:
+  - myapps/status
+  verbs:
+  - get

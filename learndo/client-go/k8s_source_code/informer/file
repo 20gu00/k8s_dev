@@ -1,0 +1,18 @@
+核心就是client-go架构
+
+informer有informer-gen代码生成器自动生成(往往每种资源对象都会有)
+/root/kubernetes/staging/src/k8s.io/client-go/informers
+informer主要的该组件有reflector反射器
+reflector反射器:用于针对指定资源对象的list watch apiserver,informer启动时会通过reflector将数据全量获取下来,通过Object的方式放到delta fifo
+Delta Fifo,本地缓存,也具有队列的功能(先进先出)(生产者消费者)
+informer可以从Delta Fifo中获取Object操作,也可以将Object存放到可索引的缓存indexer中
+indexer与etcd数据保持完全一致
+informer弹出Object用于各种event处理(后续属于自定义资源控制期的实现块)
+
+/root/kubernetes/staging/src/k8s.io/client-go/informers/factory.go
+/root/kubernetes/staging/src/k8s.io/client-go/tools/cache/shared_informer.go
+/root/kubernetes/staging/src/k8s.io/client-go/tools/cache/controller.go
+
+
+除了 Lister 之外最重要的就是资源对象事件监听的操作，这些都是在 SharedInformer 中去实现的
+sharedIndexInformer 中定义了一个 Controller,把 Reflector、DeltaFIFO 这些组件组合起来形成一个相对固定的、标准的处理流程

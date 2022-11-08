@@ -1,0 +1,9 @@
+apiVersion: gogateway.cjq.io/v1
+kind: GatewayMarket
+metadata:
+  name: gatewaymarket-demo
+spec:
+  replicas: 2
+  image: 010101010007/gateway-market
+
+

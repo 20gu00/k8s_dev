@@ -1,0 +1,3 @@
+/root/kubernetes/staging/src/k8s.io/client-go/tools/cache/reflector.go
+/root/kubernetes/staging/src/k8s.io/client-go/tools/cache/listwatch.go
+/root/kubernetes/staging/src/k8s.io/client-go/informers/apps/v1/deployment.go

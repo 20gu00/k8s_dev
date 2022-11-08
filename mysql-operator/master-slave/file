@@ -1,0 +1,28 @@
+用statefulset来运行一个有状态的mysql集群,一主多从,给予行row-base的数据复制
+
+在业务复杂的系统中，有这么一个情景：如果有一句sql语句需要锁表，导致暂时不能使用读的服务，那么就很影响运行中的业务。使用主从复制，让主库负责写，从库负责读，这样，即使主库出现了锁表的情景，通过读从库也可以保证业务的正常运作。
+做数据的热备
+业务量越来越大，I/O访问频率过高，单机无法满足，此时做多库的存储，降低磁盘I/O访问的频率，提高单个机器的I/O性能。
+
+MySQL 主从复制是指数据可以从一个MySQL数据库服务器主节点复制到一个或多个从节点。
+MySQL 默认采用异步复制方式，这样从节点不用一直访问主服务器来更新自己的数据，数据的更新可以在远程连接上进行，从节点可以复制主数据库中所有的数据库或者特定的数据库，或者特定的表。
+master节点写,slave节点读取
+主从之间数据复制
+
+pod自愿中断:管理员删除deployment pod或者更新pod模板导致pod重启
+pod非自愿中断:宿主机等导致
+
+mkdir -p /data/mysql && chmod a+w /data/mysql
+mkdir -p /data/mysql1 && chmod a+w /data/mysql1
+mkdir -p /data/mysql1 && chmod a+w /data/mysql1
+kubectl apply -f .
+
+
+
+
+
+同个namespace下短域名即可
+MASTER_HOST='mysql-0.mysql.mysql-test'
+
+有的镜像没有这个hostname命令
+#[ `hostname` =~ -([0-9]+)$ ]] || exit 1 -> [[ $HOSTNAME =~ -([0-9]+)$ ]] || exit 1

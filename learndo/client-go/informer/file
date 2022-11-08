@@ -1,0 +1,8 @@
+clientset,一次性操作,加for循环又会给太多压力给apiserver(默认操作的是原生的资源对象)
+clientset还能对资源进行watch(各种资源的client的实现的接口所包含的方法,跟list一样)
+watch:监听资源对象的增删改查
+主要是三种event事件Add update(modify) delete
+但是资源对象很多,尽管是watch也容易对apiserver造成较大的压力,所以往往会在本地形成个客户端缓存
+缓存设计一定要注意,要保证数据和etcd一致->client-go自身就维护了一套缓存机制informer(watch更新缓存)
+所以一般不会直接使用clientset调用相应资源的相应的client来操作资源,而是通过informer
+往往不会直接实例化informer,而是实例化informer工厂,通过共享informer工厂就能实现同一种资源共享informer

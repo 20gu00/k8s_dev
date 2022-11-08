@@ -1,0 +1,9 @@
+apply这些文件即可
+ETCDCTL_API=3 /tmp/test-etcd/etcdctl \
+  --endpoints etcd-0:2379,etcd-1:2379,etcd-2:2379 \
+  endpoint status --write-out=table
+kubectl scale --replicas=5 statefulset/etcd
+
+kubebuilder init --domain cjq.io --owner cjq --repo github.com/cjq/etcd-operator
+go mod tidy
+kubebuilder create api --group etcd --version v1alpha1 --kind EtcdCluster(etcd.cjq.io)

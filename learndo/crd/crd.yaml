@@ -1,0 +1,42 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  # name 必须匹配下面的spec字段：<plural>.<group>  复数的
+  name: crontabs.stable.example.com  #crd资源名称,注意如果重复定义下边的spec要对应好
+spec:
+  # group 名用于 REST API 中的定义：/apis/<group>/<version>    (apis)(GVR)
+  group: stable.example.com
+  # 列出自定义资源的所有 API 版本
+  versions:
+    - name: v1  # 版本名称，比如 v1、v2beta1 等等
+      served: true  # 是否开启通过 REST APIs 访问 `/apis/<group>/<version>/...`
+      storage: true # 必须将一个且只有一个版本标记为存储版本(最新或者主要的版本)
+      schema:  # 定义自定义对象的声明规范
+        openAPIV3Schema:
+          description: 定义CronTab资源的yaml的spec规范
+          type: object
+          properties:  #特性属性
+            spec:
+              type: object
+              properties:  #真正要使用的yaml的spec
+                cronSpec:
+                  type: string
+                image:
+                  type: string
+                replicas:
+                  type: integer
+  # 定义作用范围：Namespaced（命名空间级别）或者 Cluster（整个集群）
+  # crd是否开启namespace,controller一般是整个集群
+  scope: Namespaced
+  names:
+    # 对应资源实体
+    # kind 是 sigular 的一个驼峰形式定义，在资源清单yaml中会使用
+    kind: CronTab
+    #对应resources
+    # plural 名字用于 REST API 中的定义：/apis/<group>/<version>/<plural>
+    plural: crontabs
+    # singular 名称用于 CLI 操作或显示的一个别名  单数
+    singular: crontab
+    # shortNames 相当于缩写形式
+    shortNames:
+      - ct
