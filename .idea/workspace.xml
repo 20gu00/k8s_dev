@@ -6,61 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="9c7d2ff7-67bf-407d-a83e-647f1e53b621" name="变更" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/Makefile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/PROJECT" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/api/v1/gatewaymarket_types.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/api/v1/gatewayproxy_types.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/api/v1/groupversion_info.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/api/v1/zz_generated.deepcopy.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/certmanager/certificate.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/certmanager/kustomization.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/certmanager/kustomizeconfig.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/crd/bases/gogateway.cjq.io_gatewaymarkets.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/crd/bases/gogateway.cjq.io_gatewayproxies.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/crd/kustomization.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/crd/kustomizeconfig.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/crd/patches/cainjection_in_gatewaymarkets.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/crd/patches/cainjection_in_gatewayproxies.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/crd/patches/webhook_in_gatewaymarkets.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/crd/patches/webhook_in_gatewayproxies.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/default/kustomization.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/default/manager_auth_proxy_patch.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/default/manager_webhook_patch.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/default/webhookcainjection_patch.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/manager/kustomization.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/manager/manager.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/prometheus/kustomization.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/prometheus/monitor.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/rbac/auth_proxy_client_clusterrole.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/rbac/auth_proxy_role.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/rbac/auth_proxy_role_binding.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/rbac/auth_proxy_service.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/rbac/gatewaymarket_editor_role.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/rbac/gatewaymarket_viewer_role.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/rbac/gatewayproxy_editor_role.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/rbac/gatewayproxy_viewer_role.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/rbac/kustomization.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/rbac/leader_election_role.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/rbac/leader_election_role_binding.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/rbac/role.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/rbac/role_binding.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/samples/gogateway_v1_gatewaymarket.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/samples/gogateway_v1_gatewayproxy.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/webhook/kustomization.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/webhook/kustomizeconfig.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/config/webhook/service.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/controllers/gatewaymarket_controller.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/controllers/gatewaymarket_resource.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/controllers/gatewayproxy-resource.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/controllers/gatewayproxy_controller.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/controllers/suite_test.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/file" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/go.mod" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/go.sum" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/hack/boilerplate.go.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/gateway-operator/main.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-operator/controllers/gatewaymarket_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-operator/controllers/gatewaymarket_controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-operator/file" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-operator/file" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/learndo/client-go/k8s_source_code/schema/file" beforeDir="false" afterPath="$PROJECT_DIR$/learndo/client-go/k8s_source_code/schema/file" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/learndo/etcd-operator/controllers/etcdcluster_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/learndo/etcd-operator/controllers/etcdcluster_controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/learndo/etcd-operator/controllers/resources.go" beforeDir="false" afterPath="$PROJECT_DIR$/learndo/etcd-operator/controllers/resources.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mysql-operator/single/file" beforeDir="false" afterPath="$PROJECT_DIR$/mysql-operator/single/file" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mysql-operator/single/yaml/pv_pvc.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/mysql-operator/single/yaml/pv_pvc.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

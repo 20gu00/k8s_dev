@@ -1,0 +1,7 @@
+apiVersion: cjqapp.cjq.io/v1
+kind: MysqlSingle
+metadata:
+  name: mysqlsingle-sample
+spec:
+  # Add fields here
+  foo: bar

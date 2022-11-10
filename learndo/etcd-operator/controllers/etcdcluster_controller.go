@@ -85,6 +85,7 @@ func (r *EtcdClusterReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error)
 		or, err := ctrl.CreateOrUpdate(ctx, r, &sts, func() error {
 			// 调谐的函数必须在这里面实现，实际上就是去拼装我们的 StatefulSet
 			MutateStatefulSet(&etcdCluster, &sts)
+			//被etcdcluster所控制的statefulset
 			return controllerutil.SetControllerReference(&etcdCluster, &sts, r.Scheme)
 		})
 		log.Info("CreateOrUpdate Result", "StatefulSet", or)
@@ -95,6 +96,9 @@ func (r *EtcdClusterReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error)
 	return ctrl.Result{}, nil
 }
 
+//对 StatefulSet 和 Service 这两种资源进行 Watch，因为当这两个资源出现变化的时候我们也需要去重新进行调谐
+//只需要 Watch 被 EtcdCluster 控制的这部分对象
+//将 Service 或者 StatefulSet 删除了也会自动重新调谐然后重建出来
 func (r *EtcdClusterReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&etcdv1alpha1.EtcdCluster{}).

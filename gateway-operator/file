@@ -8,3 +8,5 @@ kubebuilder create api --group gogateway --version v1 --kind GatewayMarket
 kubectl api-resources | grep deployment
 kubectl api-resources | grep service
 kubectl api-resources | head -1
+
+一个mgr管理了多个controller

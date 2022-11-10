@@ -1,0 +1,7 @@
+domain: cjq.io
+repo: github.com/20gu00/mysql-single-operator
+resources:
+- group: cjqapp
+  kind: MysqlSingle
+  version: v1
+version: "2"

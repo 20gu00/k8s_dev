@@ -1,5 +1,6 @@
 package controllers
 
+//根据EtcdCluter去构造StatefulSet和Headless SVC资源对象
 import (
 	"strconv"
 

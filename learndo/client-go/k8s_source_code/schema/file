@@ -16,7 +16,7 @@ staging会同步一些其他的库
 
 /root/kubernetes/staging/src/k8s.io/apimachinery/pkg/runtime/scheme.go  全局的schema配置
 
-/root/kubernetes/staging/src/k8s.io/client-go/kubernetes/scheme/register.go 
+/root/kubernetes/staging/src/k8s.io/client-go/kubernetes/scheme/register.go
 
 type.go zz_generated.deepcopy.go 实现Onject
 register.go AddToSchema 将当前的资源对象添加到schema中

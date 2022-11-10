@@ -54,6 +54,7 @@ func (r *GatewayMarketReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 	svc.Name = gatewayMarket.Name
 	svc.Namespace = gatewayMarket.Namespace
 
+	//重试多次之后还不行就报错
 	if err := retry.RetryOnConflict(retry.DefaultRetry, func() error {
 		or, err := ctrl.CreateOrUpdate(ctx, r, &svc, func() error {
 			MutateSvc(&gatewayMarket, &svc)

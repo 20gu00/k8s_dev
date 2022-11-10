@@ -1,0 +1,23 @@
+$ os=$(go env GOOS)
+$ arch=$(go env GOARCH)
+curl -L https://go.kubebuilder.io/dl/2.3.1/${os}/${arch} | tar -xz -C /tmp/
+mv /tmp/kubebuilder_2.3.1_${os}_${arch} /usr/local/bin/kubebuilder
+kubebuilder version
+
+
+
+
+github下载kubebuilder
+
+初始化项目
+mkdir github.com/20gu00/etcd-operator
+$ cd github.com/20gu00/etcd-operator
+# 开启 go modules
+$ export GO111MODULE=on
+$ export GOPROXY=https://goproxy.cn
+# 初始化项目
+$ kubebuilder init --domain cjq.io --owner cjq --repo github.com/20gu00/etcd-operator
+
+go mod tidy
+kubebuilder create api --group app --version v1 --kind etcd-cluster
+make

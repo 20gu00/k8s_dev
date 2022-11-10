@@ -1,0 +1,24 @@
+# permissions for end users to edit mysqlsingles.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: mysqlsingle-editor-role
+rules:
+- apiGroups:
+  - cjqapp.cjq.io
+  resources:
+  - mysqlsingles
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - cjqapp.cjq.io
+  resources:
+  - mysqlsingles/status
+  verbs:
+  - get

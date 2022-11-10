@@ -1,1 +1,7 @@
 简单mysql,deployment,持久化
+
+kubebuilder init --domain cjq.io --license apache2 --owner "cjq" --repo github.com/20gu00/opgo mod tidy
+go get github.com/go-logr/logr@v0.1.0
+
+
+kubebuilder create api --group cjqapp --version v1 --kind MysqlSingle
