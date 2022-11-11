@@ -1,0 +1,7 @@
+apiVersion: cjqapp.cjq.io/v1
+kind: MasterSlave
+metadata:
+  name: masterslave-sample
+spec:
+  # Add fields here
+  foo: bar

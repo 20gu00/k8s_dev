@@ -26,3 +26,8 @@ MASTER_HOST='mysql-0.mysql.mysql-test'
 
 有的镜像没有这个hostname命令
 #[ `hostname` =~ -([0-9]+)$ ]] || exit 1 -> [[ $HOSTNAME =~ -([0-9]+)$ ]] || exit 1
+
+
+
+
+kubebuilder init --domain cjq.io --owner "cjq" --repo github.com/20gu00/masterslave

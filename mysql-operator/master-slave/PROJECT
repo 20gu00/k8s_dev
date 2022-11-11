@@ -1,0 +1,7 @@
+domain: cjq.io
+repo: github.com/20gu00/masterslave
+resources:
+- group: cjqapp
+  kind: MasterSlave
+  version: v1
+version: "2"
