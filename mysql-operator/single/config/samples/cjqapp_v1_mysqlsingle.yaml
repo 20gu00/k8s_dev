@@ -1,7 +1,8 @@
-apiVersion: cjqapp.cjq.io/v1
+apiVersion: cjqapp.cjq.io/v1  #GV G:group.domain
 kind: MysqlSingle
 metadata:
   name: mysqlsingle-sample
 spec:
-  # Add fields here
-  foo: bar
+  Replicas: 2
+  Image: mysql:5.7 #mysql5.7
+  MysqlPassword: "100.Acjq"

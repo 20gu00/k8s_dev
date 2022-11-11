@@ -6,13 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="9c7d2ff7-67bf-407d-a83e-647f1e53b621" name="变更" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-operator/controllers/gatewaymarket_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-operator/controllers/gatewaymarket_controller.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-operator/file" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-operator/file" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/client-go/k8s_source_code/schema/file" beforeDir="false" afterPath="$PROJECT_DIR$/learndo/client-go/k8s_source_code/schema/file" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/learndo/etcd-operator/controllers/etcdcluster_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/learndo/etcd-operator/controllers/etcdcluster_controller.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/learndo/etcd-operator/controllers/resources.go" beforeDir="false" afterPath="$PROJECT_DIR$/learndo/etcd-operator/controllers/resources.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysql-operator/single/file" beforeDir="false" afterPath="$PROJECT_DIR$/mysql-operator/single/file" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysql-operator/single/yaml/pv_pvc.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/mysql-operator/single/yaml/pv_pvc.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mysql-operator/single/config/samples/cjqapp_v1_mysqlsingle.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/mysql-operator/single/config/samples/cjqapp_v1_mysqlsingle.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mysql-operator/single/controllers/mysqlsingle_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/mysql-operator/single/controllers/mysqlsingle_controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mysql-operator/single/controllers/resources.go" beforeDir="false" afterPath="$PROJECT_DIR$/mysql-operator/single/controllers/resources.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

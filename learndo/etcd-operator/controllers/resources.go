@@ -38,6 +38,7 @@ func MutateStatefulSet(cluster *v1alpha1.EtcdCluster, sts *appsv1.StatefulSet) {
 				Containers: newContainers(cluster),
 			},
 		},
+		//statefulset的pvc声明,不指定storage会有个默认的standa
 		VolumeClaimTemplates: []corev1.PersistentVolumeClaim{
 			corev1.PersistentVolumeClaim{
 				ObjectMeta: metav1.ObjectMeta{
@@ -76,7 +77,7 @@ func newContainers(cluster *v1alpha1.EtcdCluster) []corev1.Container {
 			Env: []corev1.EnvVar{
 				corev1.EnvVar{
 					Name:  "INITIAL_CLUSTER_SIZE",
-					Value: strconv.Itoa(int(*cluster.Spec.Size)),
+					Value: strconv.Itoa(int(*cluster.Spec.Size)), //int->string
 				},
 				corev1.EnvVar{
 					Name:  "SET_NAME",
