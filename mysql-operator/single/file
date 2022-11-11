@@ -5,3 +5,16 @@ go get github.com/go-logr/logr@v0.1.0
 
 
 kubebuilder create api --group cjqapp --version v1 --kind MysqlSingle
+
+2022-11-11T20:30:57.062+0800    INFO    controller-runtime.manager      starting metrics server {"path": "/metrics"}
+
+在节点上准备好/data/mysql-single目录,当然不创建也是可以的,控制器会自动创建这个目录
+
+
+
+
+
+make docker-build IMG=010101010007/mysql-single:v1
+make docker-push IMG=010101010007/mysql-single:v1
+make deploy IMG=010101010007/mysql-single:v1
+kubectl logs single-controller-manager-b868db5cf-r7n5v -n single-system -c manager

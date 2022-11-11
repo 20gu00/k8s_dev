@@ -48,11 +48,11 @@ func MutateDeployment(mysqlSingle *v1.MysqlSingle, deploy *appsv1.Deployment) {
 				Containers: newContainers(mysqlSingle),
 				Volumes: []corev1.Volume{
 					corev1.Volume{
-						Name: "mysqlVolume",
+						Name: "mysql-volume",
 						//使用的pvc作为volume
 						VolumeSource: corev1.VolumeSource{
 							PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-								ClaimName: "mysql-pvc-claim", //pvc名称
+								ClaimName: "mysql-pv-claim", //pvc名称
 								//ReadOnly: true,
 							},
 						},
@@ -66,7 +66,8 @@ func MutateDeployment(mysqlSingle *v1.MysqlSingle, deploy *appsv1.Deployment) {
 func newContainers(mysqlSingle *v1.MysqlSingle) []corev1.Container {
 	return []corev1.Container{
 		corev1.Container{
-			Name:  "mysqlSingle",
+			//小写
+			Name:  "mysql-single",
 			Image: mysqlSingle.Spec.Image,
 			Ports: []corev1.ContainerPort{
 				corev1.ContainerPort{
@@ -75,7 +76,7 @@ func newContainers(mysqlSingle *v1.MysqlSingle) []corev1.Container {
 			},
 			VolumeMounts: []corev1.VolumeMount{
 				corev1.VolumeMount{
-					Name:      "mysqlVolume",
+					Name:      "mysql-volume",
 					MountPath: "/var/lib/mysql",
 				},
 			},
@@ -126,16 +127,17 @@ func homeDir() string {
 	return os.Getenv("USERPROFILE")
 }
 
-func newMysqlSinglePvPvc(pv *corev1.PersistentVolume) {
+func NewMysqlSinglePvPvc() {
 	var err error
 	var config *rest.Config
-	var kubeconfig *string
-
+	var kubeconfig string
+	var storageName = "mysql-single"
 	home := homeDir()
-	filepath.Join(home, ".kube", "config")
+	//注意空指针
+	kubeconfig = filepath.Join(home, ".kube", "config")
 	//pod ca token或者kubeconfig->*rest.Config
 	if config, err = rest.InClusterConfig(); err != nil {
-		if config, err = clientcmd.BuildConfigFromFlags("", *kubeconfig); err != nil {
+		if config, err = clientcmd.BuildConfigFromFlags("", kubeconfig); err != nil {
 			panic(err.Error())
 		}
 	}
@@ -156,7 +158,7 @@ func newMysqlSinglePvPvc(pv *corev1.PersistentVolume) {
 					Path: "/data/mysql-single",
 				},
 			},
-			StorageClassName: "mysql-single",
+			StorageClassName: storageName,
 			Capacity: corev1.ResourceList{
 				corev1.ResourceStorage: resource.MustParse("20Gi"),
 			},
@@ -169,5 +171,21 @@ func newMysqlSinglePvPvc(pv *corev1.PersistentVolume) {
 	})
 
 	kubeClientSet.CoreV1().PersistentVolumeClaims("default").
-		Create(&corev1.PersistentVolumeClaim{})
+		Create(&corev1.PersistentVolumeClaim{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: "mysql-pv-claim",
+			},
+			Spec: corev1.PersistentVolumeClaimSpec{
+				StorageClassName: &storageName,
+				AccessModes: []corev1.PersistentVolumeAccessMode{
+					corev1.ReadWriteMany,
+				},
+				Resources: corev1.ResourceRequirements{
+					Requests: corev1.ResourceList{
+						//string类型的常量
+						corev1.ResourceStorage: resource.MustParse("20Gi"),
+					},
+				},
+			},
+		})
 }

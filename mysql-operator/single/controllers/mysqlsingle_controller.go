@@ -91,12 +91,14 @@ func (r *MysqlSingleReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error)
 			MutateDeployment(&mysqlSingle, &deploy)
 			return controllerutil.SetControllerReference(&mysqlSingle, &deploy, r.Scheme)
 		})
+		//频繁
 		log.Info("createorupdate result", "Deployment", or)
 		return err
 	}); err != nil {
 		//调谐失败
 		return ctrl.Result{}, err
 	}
+
 	return ctrl.Result{}, nil
 }
 

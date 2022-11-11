@@ -30,6 +30,7 @@ func main() {
 	//pod有secret,里边有ca证书和token,进行身份验证,还有对应的sa,权限(默认default)
 	if config, err = rest.InClusterConfig(); err != nil { //token ca身份验证权限验证
 		// 使用KubeConfig文件创建集群配置*rest.Config对象(文件在本地)
+		//接引用
 		if config, err = clientcmd.BuildConfigFromFlags("", *kubeconfig); err != nil {
 			panic(err.Error())
 		}

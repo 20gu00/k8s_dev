@@ -18,15 +18,14 @@ package controllers
 
 import (
 	"context"
+	"github.com/go-logr/logr"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/client-go/util/retry"
-	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
-
-	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/util/retry"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
 	etcdv1alpha1 "github.com/cjq/etcd-operator/api/v1alpha1"
 )
@@ -82,13 +81,15 @@ func (r *EtcdClusterReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error)
 	sts.Namespace = etcdCluster.Namespace
 
 	if err := retry.RetryOnConflict(retry.DefaultRetry, func() error {
+		//CreateOrUpdate在Kubernetes中创建或更新给定对象obj。 集群中的对象。该对象所需的状态应与现有的状态相协调。
 		or, err := ctrl.CreateOrUpdate(ctx, r, &sts, func() error {
-			// 调谐的函数必须在这里面实现，实际上就是去拼装我们的 StatefulSet
+			//调谐函数
 			MutateStatefulSet(&etcdCluster, &sts)
 			//被etcdcluster所控制的statefulset
 			return controllerutil.SetControllerReference(&etcdCluster, &sts, r.Scheme)
 		})
-		log.Info("CreateOrUpdate Result", "StatefulSet", or)
+		//频繁
+		log.Info("CreateOrUpdate Result----------------------------------------------------", "StatefulSet", or)
 		return err
 	}); err != nil {
 		return ctrl.Result{}, err

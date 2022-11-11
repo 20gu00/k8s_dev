@@ -41,6 +41,8 @@ func init() {
 
 	_ = cjqappv1.AddToScheme(scheme)
 	// +kubebuilder:scaffold:scheme
+
+	controllers.NewMysqlSinglePvPvc()
 }
 
 func main() {
