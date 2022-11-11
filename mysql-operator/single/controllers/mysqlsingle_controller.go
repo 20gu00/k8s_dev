@@ -38,6 +38,8 @@ type MysqlSingleReconciler struct {
 	Scheme *runtime.Scheme
 }
 
+// +kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=core,resources=services,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=cjqapp.cjq.io,resources=mysqlsingles,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=cjqapp.cjq.io,resources=mysqlsingles/status,verbs=get;update;patch
 
@@ -80,14 +82,16 @@ func (r *MysqlSingleReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error)
 	//deployment
 
 	var deploy appsv1.Deployment
+	//metadata
 	deploy.Name = mysqlSingle.Name
 	deploy.Namespace = mysqlSingle.Namespace
 
 	if err := retry.RetryOnConflict(retry.DefaultRetry, func() error {
-		or, err := ctrl.CreateOrUpdate(ctx, r, deploy, func() error {
+		or, err := ctrl.CreateOrUpdate(ctx, r, &deploy, func() error {
 			MutateDeployment(&mysqlSingle, &deploy)
 			return controllerutil.SetControllerReference(&mysqlSingle, &deploy, r.Scheme)
 		})
+		log.Info("createorupdate result", "Deployment", or)
 		return err
 	}); err != nil {
 		//调谐失败

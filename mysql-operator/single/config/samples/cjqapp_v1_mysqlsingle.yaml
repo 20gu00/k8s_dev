@@ -3,6 +3,7 @@ kind: MysqlSingle
 metadata:
   name: mysqlsingle-sample
 spec:
-  Replicas: 2
-  Image: mysql:5.7 #mysql5.7
-  MysqlPassword: "100.Acjq"
+  #replicas: 2
+  #mysql5.7
+  image: "mysql:5.7"
+  mysqlPassword: "100.Acjq"

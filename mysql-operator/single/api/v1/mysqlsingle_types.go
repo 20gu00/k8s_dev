@@ -31,7 +31,7 @@ type MysqlSingleSpec struct {
 
 	Replicas      *int32 `json:"replicas,omitempty" default:"1"` //,omitempty忽略0值或nil值
 	Image         string `json:"image"`
-	MysqlPassword string `json:"mysql-password"`
+	MysqlPassword string `json:"mysqlPassword"`
 }
 
 // MysqlSingleStatus defines the observed state of MysqlSingle
@@ -44,6 +44,11 @@ type MysqlSingleStatus struct {
 }
 
 // +kubebuilder:object:root=true
+// +kubebuilder:printcolumn:name="Image",type="string",priority=1,JSONPath=".spec.image",description="MysqlSingle使用的镜像"
+// +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="Replicas",type="integer",JSONPath=".spec.Replicas",description="副本数目"
+// +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp"
+// +kubebuilder:subresource:status
 
 // MysqlSingle is the Schema for the mysqlsingles API
 type MysqlSingle struct {
