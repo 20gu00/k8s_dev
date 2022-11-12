@@ -16,6 +16,7 @@ spec:
       initContainers:
         - name: init-mysql
           image: mysql:5.7
+          #[]
           command:
             - bash
             - "-c"
@@ -39,7 +40,7 @@ spec:
             - name: config-map
               mountPath: /mnt/config-map
         #xtrbackup进行容器初始化数据的拷贝
-        #使用ncat命令远程从钱节点拷贝数据到本地
+        #使用ncat命令远程从前节点拷贝数据到本地
         #image: gcr.io/google-samples/xtrabackup:1.0
         - name: clone-mysql
           image: fxkjnj/xtrabackup:1.0
@@ -59,6 +60,7 @@ spec:
               # Prepare the backup.
               xtrabackup --prepare --target-dir=/var/lib/mysql
           volumeMounts:
+            #volume的名称
             - name: data
               mountPath: /var/lib/mysql
               subPath: mysql
@@ -178,7 +180,7 @@ spec:
         name: data  #data-mysql-0 pv_name-pod_name
       spec:
         accessModes: ["ReadWriteOnce"]
-        storageClassName: default
+        storageClassName: default  #不指定就自己创建pv绑定pvc
         resources:
           requests:
             storage: 5Gi

@@ -28,8 +28,9 @@ type MasterSlaveSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of MasterSlave. Edit MasterSlave_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	Replicas      *int32 `json:"replicas" default:"3"`
+	Image         string `json:"image" default:"mysql:5.7"`
+	MysqlPassword string `json:"mysqlPassword"`
 }
 
 // MasterSlaveStatus defines the observed state of MasterSlave

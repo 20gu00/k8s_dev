@@ -31,3 +31,5 @@ MASTER_HOST='mysql-0.mysql.mysql-test'
 
 
 kubebuilder init --domain cjq.io --owner "cjq" --repo github.com/20gu00/masterslave
+
+kubectl scale statefulset --replicas=5
