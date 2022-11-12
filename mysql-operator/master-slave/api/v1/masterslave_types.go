@@ -17,6 +17,7 @@ limitations under the License.
 package v1
 
 import (
+	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -37,6 +38,9 @@ type MasterSlaveSpec struct {
 type MasterSlaveStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+
+	//匿名结果体一般inline
+	appsv1.StatefulSetStatus `json:",inline"`
 }
 
 // +kubebuilder:object:root=true

@@ -18,7 +18,11 @@ package controllers
 
 import (
 	"context"
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/client-go/util/retry"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
+	mv1 "github.com/20gu00/masterslave/api/v1"
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -38,11 +42,43 @@ type MasterSlaveReconciler struct {
 // +kubebuilder:rbac:groups=cjqapp.cjq.io,resources=masterslaves/status,verbs=get;update;patch
 
 func (r *MasterSlaveReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
-	_ = context.Background()
-	_ = r.Log.WithValues("masterslave", req.NamespacedName)
+	ctx := context.Background()
+	log := r.Log.WithValues("masterslave", req.NamespacedName)
 
-	// your logic here
+	//实例化(Object)
+	var masterSlave mv1.MasterSlave
+	//从缓存中获取
+	if err := r.Get(ctx, req.NamespacedName, &masterSlave); err != nil {
+		return ctrl.Result{}, client.IgnoreNotFound(err)
+	}
 
+	var svc corev1.Service
+	svc.Name = masterSlave.Name
+	svc.Namespace = masterSlave.Namespace
+	//与众多资源一样
+	//masterSlave.GetNamespace()
+
+	if err := retry.RetryOnConflict(retry.DefaultRetry, func() error {
+		//crd_client svc func
+		or, err := ctrl.CreateOrUpdate(ctx, r, &svc, func() error {
+			MutateSvc(&masterSlave, &svc)
+			return controllerutil.SetControllerReference(&masterSlave, &svc, r.Scheme)
+		})
+		log.Info("createOrUpdate", "service", or) //调谐结果
+	}); err != nil {
+		return ctrl.Result{}, nil
+	}
+
+	var readSvc corev1.Service
+	readSvc.Name = masterSlave.Name
+	readSvc.Namespace = masterSlave.Namespace
+	if err := retry.RetryOnConflict(retry.DefaultRetry, func() error {
+		or, err := ctrl.CreateOrUpdate(ctx, r, &readSvc, func() error {
+
+		})
+	}); err != nil {
+
+	}
 	return ctrl.Result{}, nil
 }
 

@@ -9,8 +9,10 @@ import (
 )
 
 var (
+	//group.domain
 	MasterSlaveLabelKey       = "masterslave.cjq.io/masterslave"
 	MasterSlaveCommonLabelKey = "app"
+	VolumeClaim               = "data"
 )
 
 func MutateStatefulset(masterSlave *v1.MasterSlave, sts *appsv1.StatefulSet) {
@@ -59,7 +61,7 @@ func MutateStatefulset(masterSlave *v1.MasterSlave, sts *appsv1.StatefulSet) {
 		VolumeClaimTemplates: []corev1.PersistentVolumeClaim{
 			corev1.PersistentVolumeClaim{
 				ObjectMeta: metav1.ObjectMeta{
-					Name: "data",
+					Name: VolumeClaim,
 				},
 				Spec: corev1.PersistentVolumeClaimSpec{
 					AccessModes: []corev1.PersistentVolumeAccessMode{
@@ -108,7 +110,7 @@ func newInitContainer(masterSlave *v1.MasterSlave) []corev1.Container {
 			},
 			VolumeMounts: []corev1.VolumeMount{
 				corev1.VolumeMount{
-					Name:      "data",
+					Name:      VolumeClaim,
 					MountPath: "/var/lib/mysql",
 					SubPath:   "mysql", //会自动给volume创建子路径mysql(挂载类似文件系统操作,目录是入口,会隐藏原来的文件)
 					//volume的子路径的,比如cm secret的key
@@ -142,7 +144,7 @@ func newContainers(masterSlave *v1.MasterSlave) []corev1.Container {
 			VolumeMounts: []corev1.VolumeMount{
 				//data目录
 				corev1.VolumeMount{
-					Name:      "data",
+					Name:      VolumeClaim,
 					MountPath: "/var/lib/mysql",
 					SubPath:   "mysql",
 				},
@@ -203,7 +205,7 @@ func newContainers(masterSlave *v1.MasterSlave) []corev1.Container {
 			},
 			VolumeMounts: []corev1.VolumeMount{
 				corev1.VolumeMount{
-					Name:      "data",
+					Name:      VolumeClaim,
 					MountPath: "/var/lib/mysql",
 					SubPath:   "mysql",
 				},
@@ -218,6 +220,41 @@ func newContainers(masterSlave *v1.MasterSlave) []corev1.Container {
 					corev1.ResourceMemory: resource.MustParse("100Mi"),
 				},
 			},
+		},
+	}
+}
+
+func MutateSvc(masterSlave *v1.MasterSlave, svc *corev1.Service) {
+	svc.Labels = map[string]string{
+		MasterSlaveCommonLabelKey: "masterSlave",
+	}
+	svc.Spec = corev1.ServiceSpec{
+		Ports: []corev1.ServicePort{
+			corev1.ServicePort{
+				Name: "mysql",
+				Port: 3306,
+			},
+		},
+		ClusterIP: corev1.ClusterIPNone,
+		Selector: map[string]string{
+			MasterSlaveLabelKey: masterSlave.Name,
+		},
+	}
+}
+
+func MutateReadSvc(masterslave *v1.MasterSlave, svc *corev1.Service) {
+	svc.Labels = map[string]string{
+		MasterSlaveCommonLabelKey: "masterSlave",
+	}
+	svc.Spec = corev1.ServiceSpec{
+		Ports: []corev1.ServicePort{
+			corev1.ServicePort{
+				Name: "mysql",
+				Port: 3306,
+			},
+		},
+		Selector: map[string]string{
+			MasterSlaveLabelKey: masterslave.Name,
 		},
 	}
 }
