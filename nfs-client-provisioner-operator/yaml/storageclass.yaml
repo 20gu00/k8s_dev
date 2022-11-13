@@ -1,0 +1,11 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  #annotations:
+    #kubectl.kubernetes.io/last-applied-configuration: |
+    #  {"apiVersion":"storage.k8s.io/v1","kind":"StorageClass","metadata":{"annotations":{},"name":"nfs"},"provisioner":"nfs-client-provisioner","reclaimPolicy":"Delete"}
+    #storageclass.beta.kubernetes.io/is-default-class: "true"
+    #storageclass.kubernetes.io/is-default-class: "true"
+  name: nfs
+provisioner: nfs-client-provisioner
+reclaimPolicy: Delete #有两种选择, Delete是PV删除以后,文件也从NFS里面删除；Retain是保留文件

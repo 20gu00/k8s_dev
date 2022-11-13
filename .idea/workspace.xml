@@ -71,11 +71,11 @@
       <recent name="$PROJECT_DIR$/client-go/k8s_source_code/reflector" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/redis-operator/single/yaml" />
       <recent name="$PROJECT_DIR$/learndo/crd-controller" />
       <recent name="$PROJECT_DIR$/learndo/crd-controller/hack" />
       <recent name="$PROJECT_DIR$/learndo" />
-      <recent name="$PROJECT_DIR$/client-go/clientset" />
     </key>
   </component>
   <component name="RunManager">

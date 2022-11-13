@@ -4,6 +4,7 @@ import (
 	v1 "github.com/20gu00/masterslave/api/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	storagev1 "k8s.io/api/storage/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -117,7 +118,7 @@ func newInitContainer(masterSlave *v1.MasterSlave) []corev1.Container {
 				corev1.VolumeMount{
 					Name:      "data",
 					MountPath: "/var/lib/mysql",
-					SubPath:   "mysql", //会自动给volume创建子路径mysql(挂载类似文件系统操作,目录是入口,会隐藏原来的文件)
+					SubPath:   "mysql", //一般会自动给volume创建子路径mysql(挂载类似文件系统操作,目录是入口,会隐藏原来的文件)
 					//volume的子路径的,比如cm secret的key
 				},
 				corev1.VolumeMount{
@@ -310,4 +311,34 @@ func homeDir() string {
 	}
 
 	return os.Getenv("USERPROFILE")
+}
+
+func NewStorage() {
+	var (
+		err        error
+		config     *rest.Config
+		kubeConfig string
+	)
+
+	home := homeDir()
+	kubeConfig = filepath.Join(home, ".kube", "config")
+	config, err = rest.InClusterConfig()
+	if err != nil {
+		//pod方式获取操作集群的配置文件失败
+		config, err = clientcmd.BuildConfigFromFlags("", kubeConfig)
+		if err != nil {
+			panic(err.Error())
+		}
+	}
+
+	kubeClient, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	kubeClient.StorageV1().StorageClasses().Create(&storagev1.StorageClass{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "default",
+		},
+	})
 }

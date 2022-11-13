@@ -1,0 +1,37 @@
+yum install rpcbind nfs-utils -y
+systemctl enable rpcbind
+systemctl enable nfs
+systemctl start rpcbind
+systemctl start nfs
+
+mkdir -p /data/nfs
+echo '/data/nfs  <客户端节点 ip或访问网段1>/24(rw,sync,no_subtree_check,no_root_squash) <客户端节点 ip或访问网段2>/24(rw,sync,no_subtree_check,no_root_squash)
+'  >>/etc/exports
+systemctl restart nfs
+
+exportfs   -v
+showmount -e <服务器 ip>
+
+需要使用到一个 nfs-client 的自动配置程序，我们也叫它 Provisioner，这个程序使用我们已经配置好的 nfs 服务器，来自动创建持久卷，也就是自动帮我们创建 PV。
+
+自动创建的 PV 以 ${namespace}-${pvcName}-${pvName}这样的命名格式创建在 NFS 服务器上的共享数据目录中
+
+而当这个 PV 被回收后会以 archieved-${namespace}-${pvcName}-${pvName}这样的命名格式存在 NFS 服务器上。
+
+
+provision “default/test-claim” class “managed-nfs-storage”: unexpected error getting claim reference: selfLink was empty, can’t make reference
+问题描述
+K8s 上部署 nfs pvc 时报错：
+
+kubectl logs -f nfs-client-provisioner-666fb6b5fb-8x72v
+provision "default/test-claim" class "managed-nfs-storage": unexpected error getting claim reference: selfLink was empty, can't make reference
+
+2.解决方法
+Kubernetes 1.20及以后版本禁用了 selfLink 所致。
+修改 /etc/kubernetes/manifests/kube-apiserver.yaml，添加 - --feature-gates=RemoveSelfLink=false 后重新部署：
+
+spec:
+  containers:
+  - command:
+    - kube-apiserver
+    - --feature-gates=RemoveSelfLink=false

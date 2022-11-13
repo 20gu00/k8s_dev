@@ -37,3 +37,59 @@ kubectl scale statefulset --replicas=5
 可以通过busybox的initcontainer来修改挂载目录的权限
 
 建议不要使用无storageClassName的pvc
+
+安装minio
+wget https://github.com/kubernetes-sigs/krew/releases/download/v0.4.1/krew.tar.gz
+wget https://github.com/kubernetes-sigs/krew/releases/download/v0.4.1/krew.yaml
+kubectl krew update
+kubectl krew install minio
+tar -zxvf krew.tar.gz
+./krew-linux_amd64 install --manifest=krew.yaml --archive=krew.tar.gz
+# 添加$HOME/.krew/bin目录到PATH环境变量。可以在.bashrc或者zshr文件中添加以下内容
+$ export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+kubectl plugin list
+kubectl krew search
+kubectl krew install minio
+kubectl minio init
+kubectl get pods -n minio-operator
