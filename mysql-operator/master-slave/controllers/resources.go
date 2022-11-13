@@ -17,6 +17,7 @@ var (
 	//singular.domain
 	MasterSlaveLabelKey       = "masterslave.cjq.io/masterslave"
 	MasterSlaveCommonLabelKey = "app"
+	storageName               = "default"
 )
 
 func MutateStatefulset(masterSlave *v1.MasterSlave, sts *appsv1.StatefulSet) {
@@ -71,7 +72,7 @@ func MutateStatefulset(masterSlave *v1.MasterSlave, sts *appsv1.StatefulSet) {
 					AccessModes: []corev1.PersistentVolumeAccessMode{
 						corev1.ReadWriteOnce,
 					},
-					//StorageClassName: "default"
+					StorageClassName: &storageName,
 					Resources: corev1.ResourceRequirements{
 						Requests: corev1.ResourceList{
 							corev1.ResourceStorage: resource.MustParse("5Gi"),
@@ -171,7 +172,7 @@ func newContainers(masterSlave *v1.MasterSlave) []corev1.Container {
 					Exec: &corev1.ExecAction{
 						Command: []string{
 							//会自动转换好
-							"mysqladmin, ping",
+							"mysqladmin", "ping",
 						},
 					},
 				},
@@ -184,7 +185,7 @@ func newContainers(masterSlave *v1.MasterSlave) []corev1.Container {
 					Exec: &corev1.ExecAction{
 						Command: []string{
 							"mysql", "-h",
-							"127.0.0.1 -e SELECT 1",
+							"127.0.0.1", "-e", "SELECT 1",
 						},
 					},
 				},
@@ -296,7 +297,7 @@ func NewConfigMap() {
 		},
 		Data: map[string]string{
 			"master.cnf": "[mysqld]\n    log-bin",
-			"slave.cn":   "[mysqld]\nsuper-read-only",
+			"slave.cnf":  "[mysqld]\nsuper-read-only",
 		},
 	})
 
