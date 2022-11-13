@@ -7,8 +7,12 @@
     <list default="true" id="9c7d2ff7-67bf-407d-a83e-647f1e53b621" name="变更" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mysql-operator/master-slave/api/v1/masterslave_types.go" beforeDir="false" afterPath="$PROJECT_DIR$/mysql-operator/master-slave/api/v1/masterslave_types.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mysql-operator/master-slave/api/v1/zz_generated.deepcopy.go" beforeDir="false" afterPath="$PROJECT_DIR$/mysql-operator/master-slave/api/v1/zz_generated.deepcopy.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mysql-operator/master-slave/config/samples/cjqapp_v1_masterslave.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/mysql-operator/master-slave/config/samples/cjqapp_v1_masterslave.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mysql-operator/master-slave/controllers/masterslave_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/mysql-operator/master-slave/controllers/masterslave_controller.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mysql-operator/master-slave/controllers/resources.go" beforeDir="false" afterPath="$PROJECT_DIR$/mysql-operator/master-slave/controllers/resources.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mysql-operator/master-slave/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/mysql-operator/master-slave/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mysql-operator/master-slave/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/mysql-operator/master-slave/main.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

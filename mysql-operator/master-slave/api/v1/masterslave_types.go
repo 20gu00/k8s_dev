@@ -43,7 +43,14 @@ type MasterSlaveStatus struct {
 	appsv1.StatefulSetStatus `json:",inline"`
 }
 
+//同样也可以通过 +kubebuilder:printcolumn 来添加对应的信息，只是状态的数据是通过 .status 在 JSONPath 属性中去获取
+
 // +kubebuilder:object:root=true
+// +kubebuilder:printcolumn:name="Image",priority=1,type="string",JSONPath=".spec.image",description="masterSlave Image"
+// +kubebuilder:printcolumn:name="Replicas",type="integer",JSONPath=".spec.replicas",description="masterSlave count"
+// +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp"
+// +kubebuilder:printcolumn:name="masterSlaveStatus",type="string",JSONPath=".status.conditions[0].status",description="masterSlave lastPorbe status"
+// +kubebuilder:subresource:status
 
 // MasterSlave is the Schema for the masterslaves API
 type MasterSlave struct {

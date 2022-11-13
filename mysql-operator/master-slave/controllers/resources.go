@@ -6,13 +6,17 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
+	"os"
+	"path/filepath"
 )
 
 var (
-	//group.domain
+	//singular.domain
 	MasterSlaveLabelKey       = "masterslave.cjq.io/masterslave"
 	MasterSlaveCommonLabelKey = "app"
-	VolumeClaim               = "data"
 )
 
 func MutateStatefulset(masterSlave *v1.MasterSlave, sts *appsv1.StatefulSet) {
@@ -61,7 +65,7 @@ func MutateStatefulset(masterSlave *v1.MasterSlave, sts *appsv1.StatefulSet) {
 		VolumeClaimTemplates: []corev1.PersistentVolumeClaim{
 			corev1.PersistentVolumeClaim{
 				ObjectMeta: metav1.ObjectMeta{
-					Name: VolumeClaim,
+					Name: "data",
 				},
 				Spec: corev1.PersistentVolumeClaimSpec{
 					AccessModes: []corev1.PersistentVolumeAccessMode{
@@ -110,7 +114,7 @@ func newInitContainer(masterSlave *v1.MasterSlave) []corev1.Container {
 			},
 			VolumeMounts: []corev1.VolumeMount{
 				corev1.VolumeMount{
-					Name:      VolumeClaim,
+					Name:      "data",
 					MountPath: "/var/lib/mysql",
 					SubPath:   "mysql", //会自动给volume创建子路径mysql(挂载类似文件系统操作,目录是入口,会隐藏原来的文件)
 					//volume的子路径的,比如cm secret的key
@@ -144,7 +148,7 @@ func newContainers(masterSlave *v1.MasterSlave) []corev1.Container {
 			VolumeMounts: []corev1.VolumeMount{
 				//data目录
 				corev1.VolumeMount{
-					Name:      VolumeClaim,
+					Name:      "data",
 					MountPath: "/var/lib/mysql",
 					SubPath:   "mysql",
 				},
@@ -205,7 +209,7 @@ func newContainers(masterSlave *v1.MasterSlave) []corev1.Container {
 			},
 			VolumeMounts: []corev1.VolumeMount{
 				corev1.VolumeMount{
-					Name:      VolumeClaim,
+					Name:      "data",
 					MountPath: "/var/lib/mysql",
 					SubPath:   "mysql",
 				},
@@ -247,6 +251,7 @@ func MutateReadSvc(masterslave *v1.MasterSlave, svc *corev1.Service) {
 		MasterSlaveCommonLabelKey: "masterSlave",
 	}
 	svc.Spec = corev1.ServiceSpec{
+		ClusterIP: svc.Spec.ClusterIP,
 		Ports: []corev1.ServicePort{
 			corev1.ServicePort{
 				Name: "mysql",
@@ -257,4 +262,51 @@ func MutateReadSvc(masterslave *v1.MasterSlave, svc *corev1.Service) {
 			MasterSlaveLabelKey: masterslave.Name,
 		},
 	}
+}
+
+func NewConfigMap() {
+	var (
+		err        error
+		config     *rest.Config
+		kubeConfig string
+	)
+
+	home := homeDir()
+	kubeConfig = filepath.Join(home, ".kube", "config")
+	config, err = rest.InClusterConfig()
+	if err != nil {
+		//pod方式获取操作集群的配置文件失败
+		config, err = clientcmd.BuildConfigFromFlags("", kubeConfig)
+		if err != nil {
+			panic(err.Error())
+		}
+	}
+
+	kubeClient, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	kubeClient.CoreV1().ConfigMaps("default").Create(&corev1.ConfigMap{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "mysql",
+			Labels: map[string]string{
+				MasterSlaveCommonLabelKey: "mysql",
+			},
+		},
+		Data: map[string]string{
+			"master.cnf": "[mysqld]\n    log-bin",
+			"slave.cn":   "[mysqld]\nsuper-read-only",
+		},
+	})
+
+}
+
+func homeDir() string {
+	//linux
+	if h := os.Getenv("HOME"); h != "" {
+		return h
+	}
+
+	return os.Getenv("USERPROFILE")
 }

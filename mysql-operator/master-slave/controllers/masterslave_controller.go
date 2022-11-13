@@ -18,6 +18,7 @@ package controllers
 
 import (
 	"context"
+	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/util/retry"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -38,6 +39,11 @@ type MasterSlaveReconciler struct {
 	Scheme *runtime.Scheme
 }
 
+//resources plural
+//group.domain
+
+// +kubebuilder:rbac:groups=apps,resources=statefulsets,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=core,resources=services,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=cjqapp.cjq.io,resources=masterslaves,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=cjqapp.cjq.io,resources=masterslaves/status,verbs=get;update;patch
 
@@ -64,7 +70,8 @@ func (r *MasterSlaveReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error)
 			MutateSvc(&masterSlave, &svc)
 			return controllerutil.SetControllerReference(&masterSlave, &svc, r.Scheme)
 		})
-		log.Info("createOrUpdate", "service", or) //调谐结果
+		log.Info("createOrUpdate mysql service", "service", or) //调谐结果
+		return err
 	}); err != nil {
 		return ctrl.Result{}, nil
 	}
@@ -74,16 +81,38 @@ func (r *MasterSlaveReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error)
 	readSvc.Namespace = masterSlave.Namespace
 	if err := retry.RetryOnConflict(retry.DefaultRetry, func() error {
 		or, err := ctrl.CreateOrUpdate(ctx, r, &readSvc, func() error {
-
+			MutateReadSvc(&masterSlave, &readSvc)
+			return controllerutil.SetControllerReference(&masterSlave, &readSvc, r.Scheme)
 		})
+		log.Info("createOrUpdate mysql read-service", "Service", or)
+		return err
 	}); err != nil {
-
+		return ctrl.Result{}, err
 	}
+
+	var sts appsv1.StatefulSet
+	sts.Name = masterSlave.Name
+	sts.Namespace = masterSlave.Namespace
+
+	if err := retry.RetryOnConflict(retry.DefaultRetry, func() error {
+		or, err := ctrl.CreateOrUpdate(ctx, r, &sts, func() error {
+			MutateStatefulset(&masterSlave, &sts)
+			return controllerutil.SetControllerReference(&masterSlave, &sts, r.Scheme)
+		})
+		log.Info("createOrUpdate statefulset", "Statefulset", or)
+		return err
+	}); err != nil {
+		return ctrl.Result{}, err
+	}
+
 	return ctrl.Result{}, nil
 }
 
+//监听crd所控制的资源statefulset service
 func (r *MasterSlaveReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&cjqappv1.MasterSlave{}).
+		Owns(&appsv1.StatefulSet{}).
+		Owns(&corev1.Service{}).
 		Complete(r)
 }
