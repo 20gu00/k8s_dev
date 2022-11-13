@@ -35,3 +35,7 @@ spec:
   - command:
     - kube-apiserver
     - --feature-gates=RemoveSelfLink=false
+
+statefulset的pvc声明,帮助每个pod创建pvc
+
+pvc删除pv也删除,实际的目录还有

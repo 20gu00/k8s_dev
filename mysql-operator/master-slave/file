@@ -93,3 +93,16 @@ kubectl krew search
 kubectl krew install minio
 kubectl minio init
 kubectl get pods -n minio-operator
+
+csi-s3-provisioner
+
+测试:
+kubectl run --rm mysql-client --image=mysql:5.7 -it --restart=Never -- mysql -h mysql-0.mysql <<EOF
+CREATE DATABASE test;
+CREATE TABLE test.messages (message varchar(250));
+INSERT INTO test.messages VALUES("hello");
+EOF
+kubectl run --rm mysql-client --image=mysql:5.7 -it --restart=Never -- mysql -h mysql-read -e  "SELECT *FROM test.messages"
+kubectl run --rm mysql-client --image=mysql:5.7 -it --restart=Never -- mysql -h mysql-read
+
+

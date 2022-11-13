@@ -56,6 +56,7 @@ spec:
               ordinal=${BASH_REMATCH[1]}
               [[ $ordinal -eq 0 ]] && exit 0
               # Clone data from previous peer.
+              #注意名称 pod_name.svc_name
               ncat --recv-only mysql-$(($ordinal-1)).mysql 3307 | xbstream -x -C /var/lib/mysql
               # Prepare the backup.
               xtrabackup --prepare --target-dir=/var/lib/mysql
@@ -180,20 +181,20 @@ spec:
         name: data  #data-mysql-0 pv_name-pod_name
       spec:
         accessModes: ["ReadWriteOnce"]
-        storageClassName: default  #不指定就自己创建pv绑定pvc
+        storageClassName: nfs  #不指定就自己创建pv绑定pvc
         resources:
           requests:
             storage: 5Gi
 ---
-apiVersion: policy/v1beta1
-kind: PodDisruptionBudget  #pod中断预算
-metadata:
-  name: mysql-pdb
-  labels:
-    pdb: mysql
-spec:
-  minAvailable: 2  #.spec.minAvailable：表示发生自愿中断的过程中，要保证至少可用的Pods数或者比例 .spec.maxUnavailable：表示发生自愿中断的过程中，要保证最大不可用的Pods数或者比例
-  #通过标签匹配,注意标签的重复性
-  selector:
-    matchLabels:
-      app: mysql
+#apiVersion: policy/v1beta1
+#kind: PodDisruptionBudget  #pod中断预算
+#metadata:
+#  name: mysql-pdb
+#  labels:
+#    pdb: mysql
+#spec:
+#  minAvailable: 2  #.spec.minAvailable：表示发生自愿中断的过程中，要保证至少可用的Pods数或者比例 .spec.maxUnavailable：表示发生自愿中断的过程中，要保证最大不可用的Pods数或者比例
+#  #通过标签匹配,注意标签的重复性
+#  selector:
+#    matchLabels:
+#      app: mysql

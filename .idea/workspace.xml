@@ -8,6 +8,8 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mysql-operator/master-slave/controllers/resources.go" beforeDir="false" afterPath="$PROJECT_DIR$/mysql-operator/master-slave/controllers/resources.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mysql-operator/master-slave/file" beforeDir="false" afterPath="$PROJECT_DIR$/mysql-operator/master-slave/file" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mysql-operator/master-slave/yaml/statefulset.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/mysql-operator/master-slave/yaml/statefulset.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nfs-client-provisioner-operator/file" beforeDir="false" afterPath="$PROJECT_DIR$/nfs-client-provisioner-operator/file" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

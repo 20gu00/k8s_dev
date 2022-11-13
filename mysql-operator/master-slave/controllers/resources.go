@@ -4,7 +4,6 @@ import (
 	v1 "github.com/20gu00/masterslave/api/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	storagev1 "k8s.io/api/storage/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -18,7 +17,7 @@ var (
 	//singular.domain
 	MasterSlaveLabelKey       = "masterslave.cjq.io/masterslave"
 	MasterSlaveCommonLabelKey = "app"
-	storageName               = "default"
+	storageName               = "nfs" //nfs-client-provisioner
 )
 
 func MutateStatefulset(masterSlave *v1.MasterSlave, sts *appsv1.StatefulSet) {
@@ -64,10 +63,12 @@ func MutateStatefulset(masterSlave *v1.MasterSlave, sts *appsv1.StatefulSet) {
 				},
 			},
 		},
+		//注意持久化卷的易错点,这里卷名是固定了的,当你重新创建这个资源会延续使用原本的卷,而这个卷有时候是你不想要的
+		//有时候卷对于你来说脏数据
 		VolumeClaimTemplates: []corev1.PersistentVolumeClaim{
 			corev1.PersistentVolumeClaim{
 				ObjectMeta: metav1.ObjectMeta{
-					Name: "data",
+					Name: "data", //pvc:data-mysql-0 pv_name-pod_name
 				},
 				Spec: corev1.PersistentVolumeClaimSpec{
 					AccessModes: []corev1.PersistentVolumeAccessMode{
@@ -112,7 +113,7 @@ func newInitContainer(masterSlave *v1.MasterSlave) []corev1.Container {
 			Image: "fxkjnj/xtrabackup:1.0",
 			Command: []string{
 				"bash", "-c",
-				"set -ex\n              # Skip the clone if data already exists.\n              [[ -d /var/lib/mysql/mysql ]] && exit 0\n              # Skip the clone on master (ordinal index 0).\n              [[ `hostname` =~ -([0-9]+)$ ]] || exit 1\n              ordinal=${BASH_REMATCH[1]}\n              [[ $ordinal -eq 0 ]] && exit 0\n              # Clone data from previous peer.\n              ncat --recv-only mysql-$(($ordinal-1)).mysql 3307 | xbstream -x -C /var/lib/mysql\n              # Prepare the backup.\n              xtrabackup --prepare --target-dir=/var/lib/mysql",
+				"set -ex\n              # Skip the clone if data already exists.\n              [[ -d /var/lib/mysql/mysql ]] && exit 0\n              # Skip the clone on master (ordinal index 0).\n              [[ `hostname` =~ -([0-9]+)$ ]] || exit 1\n              ordinal=${BASH_REMATCH[1]}\n              [[ $ordinal -eq 0 ]] && exit 0\n              # Clone data from previous peer.\n              ncat --recv-only masterslave-sample-$(($ordinal-1)).masterslave-sample 3307 | xbstream -x -C /var/lib/mysql\n              # Prepare the backup.\n              xtrabackup --prepare --target-dir=/var/lib/mysql",
 			},
 			VolumeMounts: []corev1.VolumeMount{
 				corev1.VolumeMount{
@@ -311,34 +312,4 @@ func homeDir() string {
 	}
 
 	return os.Getenv("USERPROFILE")
-}
-
-func NewStorage() {
-	var (
-		err        error
-		config     *rest.Config
-		kubeConfig string
-	)
-
-	home := homeDir()
-	kubeConfig = filepath.Join(home, ".kube", "config")
-	config, err = rest.InClusterConfig()
-	if err != nil {
-		//pod方式获取操作集群的配置文件失败
-		config, err = clientcmd.BuildConfigFromFlags("", kubeConfig)
-		if err != nil {
-			panic(err.Error())
-		}
-	}
-
-	kubeClient, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	kubeClient.StorageV1().StorageClasses().Create(&storagev1.StorageClass{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: "default",
-		},
-	})
 }
