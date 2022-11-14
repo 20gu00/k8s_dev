@@ -40,8 +40,8 @@ type RedisStsReconciler struct {
 
 // +kubebuilder:rbac:groups=core,resources=services,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=apps,resources=statefulsets,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=app.cjq.io,resources=redissts,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=app.cjq.io,resources=redissts/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=app.cjq.io,resources=redisstss,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=app.cjq.io,resources=redisstss/status,verbs=get;update;patch
 
 func (r *RedisStsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	ctx := context.Background()

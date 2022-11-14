@@ -32,7 +32,7 @@ spec:
             - "/work-dir/peer-finder"
           args:
             - -on-start="/work-dir/on-start.sh"
-            - "-service=redis"
+            - "-service=redis"  #service
           env:
             - name: POD_NAMESPACE
               valueFrom:

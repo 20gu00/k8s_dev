@@ -9,15 +9,16 @@ import (
 )
 
 var (
+	storage           = "nfs"
 	RedisStsCommonKey = "app.cjq.io/redisSts"
 	RedisStsLabelKey  = "app"
 )
 
-func MutateStatefulset(redisSts *v1.RedisSts, deploy *appsv1.StatefulSet) {
-	deploy.Labels = map[string]string{
+func MutateStatefulset(redisSts *v1.RedisSts, sts *appsv1.StatefulSet) {
+	sts.Labels = map[string]string{
 		RedisStsCommonKey: "redisSts",
 	}
-	deploy.Spec = appsv1.StatefulSetSpec{
+	sts.Spec = appsv1.StatefulSetSpec{
 		ServiceName: "redis",
 		Replicas:    redisSts.Spec.Replicas,
 		Selector: &metav1.LabelSelector{
@@ -68,14 +69,15 @@ func MutateStatefulset(redisSts *v1.RedisSts, deploy *appsv1.StatefulSet) {
 								ValueFrom: &corev1.EnvVarSource{
 									FieldRef: &corev1.ObjectFieldSelector{
 										APIVersion: "v1",
-										FieldPath:  deploy.Namespace,
+										//注入pod信息,环境变量方式
+										FieldPath: "metadata.namespace",
 									},
 								},
 							},
 						},
 						VolumeMounts: []corev1.VolumeMount{
 							corev1.VolumeMount{
-								Name:      "/opt",
+								Name:      "opt",
 								MountPath: "/opt",
 							},
 							corev1.VolumeMount{
@@ -88,7 +90,7 @@ func MutateStatefulset(redisSts *v1.RedisSts, deploy *appsv1.StatefulSet) {
 				Containers: []corev1.Container{
 					corev1.Container{
 						Name:  "redis",
-						Image: "debian:jessie",
+						Image: redisSts.Spec.Image,
 						Ports: []corev1.ContainerPort{
 							corev1.ContainerPort{
 								Name:          "peer",
@@ -156,6 +158,7 @@ func MutateStatefulset(redisSts *v1.RedisSts, deploy *appsv1.StatefulSet) {
 							corev1.ResourceStorage: resource.MustParse("1Gi"),
 						},
 					},
+					StorageClassName: &storage,
 				},
 			},
 		},
@@ -177,7 +180,6 @@ func MutateSvc(redisSingle *v1.RedisSts, svc *corev1.Service) {
 		Selector: map[string]string{
 			RedisStsLabelKey: redisSingle.Name,
 		},
-		PublishNotReadyAddresses: "true",
+		PublishNotReadyAddresses: true,
 	}
 }
-

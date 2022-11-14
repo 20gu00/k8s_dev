@@ -3,6 +3,6 @@ kind: RedisSts
 metadata:
   name: redissts-sample
 spec:
-  Replicas: 2
-  Image:
+  replicas: 2
+  image: "debian:jessie"
 
