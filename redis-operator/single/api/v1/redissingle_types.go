@@ -42,6 +42,10 @@ type RedisSingleStatus struct {
 }
 
 // +kubebuilder:object:root=true
+// +kubebuilder:printcolumn:name="Image",type="string",priority=1,JSONPath=".spec.image",description="redisSingle使用的镜像"
+// +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="Replicas",type="integer",JSONPath=".spec.Replicas",description="副本数目"
+// +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp"
 
 // RedisSingle is the Schema for the redissingles API
 type RedisSingle struct {

@@ -3,5 +3,5 @@ kind: RedisSingle
 metadata:
   name: redissingle-sample
 spec:
-  replicas: 2
-  image:
+  replicas: 1 #持久化应用 数据库 这里不是集群模式
+  image: redis:5.0

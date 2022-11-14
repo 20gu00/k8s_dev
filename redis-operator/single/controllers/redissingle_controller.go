@@ -18,6 +18,10 @@ package controllers
 
 import (
 	"context"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/client-go/util/retry"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -34,20 +38,56 @@ type RedisSingleReconciler struct {
 	Scheme *runtime.Scheme
 }
 
+// +kubebuilder:rabc:group=apps,Resources=deployments,verbs=get;list;watch;patch;create;update;delete
+// +kubebuilder:rabc:group=core,Resources=services,verbs=get;list;watch;patch;create;update;delete
 // +kubebuilder:rbac:groups=app.cjq.io,resources=redissingles,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=app.cjq.io,resources=redissingles/status,verbs=get;update;patch
 
 func (r *RedisSingleReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
-	_ = context.Background()
-	_ = r.Log.WithValues("redissingle", req.NamespacedName)
+	ctx := context.Background()
+	log := r.Log.WithValues("redissingle", req.NamespacedName)
 
-	// your logic here
+	var redisSingle appv1.RedisSingle
+	if err := r.Get(ctx, req.NamespacedName, &redisSingle); err != nil {
+		return ctrl.Result{}, client.IgnoreNotFound(err)
+	}
 
+	var svc corev1.Service
+	svc.Name = redisSingle.Name
+	svc.Namespace = redisSingle.Namespace
+
+	if err := retry.RetryOnConflict(retry.DefaultRetry, func() error {
+		or, err := ctrl.CreateOrUpdate(ctx, r, &svc, func() error {
+			MutateSvc(&redisSingle, &svc)
+			return controllerutil.SetControllerReference(&redisSingle, &svc, r.Scheme)
+		})
+		log.Info("createOrUpdata result", "service", or)
+		return err
+	}); err != nil {
+		return ctrl.Result{}, nil
+	}
+
+	var deploy appsv1.Deployment
+	deploy.Name = redisSingle.Name
+	deploy.Namespace = redisSingle.Namespace
+
+	if err := retry.RetryOnConflict(retry.DefaultRetry, func() error {
+		or, err := ctrl.CreateOrUpdate(ctx, r, &deploy, func() error {
+			MutateDeployment(&redisSingle, &deploy)
+			return controllerutil.SetControllerReference(&redisSingle, &deploy, r.Scheme)
+		})
+		log.Info("createorupdate", "deployment", or)
+		return err
+	}); err != nil {
+		return ctrl.Result{}, nil
+	}
 	return ctrl.Result{}, nil
 }
 
 func (r *RedisSingleReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&appv1.RedisSingle{}).
+		Owns(&appsv1.Deployment{}).
+		Owns(&corev1.Service{}).
 		Complete(r)
 }

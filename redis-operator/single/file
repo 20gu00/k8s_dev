@@ -1,0 +1,3 @@
+clientset的create就是类似kubectl的create,不更新,注意已经存在的volume
+如果删除pv不需要删除目录也行,那么保留的目录数据一样存在
+pod->pvc->目录->pv

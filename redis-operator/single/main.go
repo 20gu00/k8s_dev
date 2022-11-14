@@ -41,6 +41,8 @@ func init() {
 
 	_ = appv1.AddToScheme(scheme)
 	// +kubebuilder:scaffold:scheme
+
+	controllers.NewPvCm()
 }
 
 func main() {
