@@ -1,0 +1,24 @@
+# permissions for end users to edit redissts.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: redissts-editor-role
+rules:
+- apiGroups:
+  - app.cjq.io
+  resources:
+  - redissts
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - app.cjq.io
+  resources:
+  - redissts/status
+  verbs:
+  - get

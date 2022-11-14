@@ -1,0 +1,7 @@
+domain: cjq.io
+repo: github.com/20gu00/redis-sts
+resources:
+- group: app
+  kind: RedisSts
+  version: v1
+version: "2"

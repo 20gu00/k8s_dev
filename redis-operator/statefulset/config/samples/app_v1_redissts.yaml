@@ -1,0 +1,8 @@
+apiVersion: app.cjq.io/v1
+kind: RedisSts
+metadata:
+  name: redissts-sample
+spec:
+  Replicas: 2
+  Image:
+
