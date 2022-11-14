@@ -1,0 +1,7 @@
+domain: cjq.io
+repo: github.com/20gu00/redis-operator
+resources:
+- group: app
+  kind: RedisSingle
+  version: v1
+version: "2"

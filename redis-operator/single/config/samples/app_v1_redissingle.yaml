@@ -1,0 +1,7 @@
+apiVersion: app.cjq.io/v1
+kind: RedisSingle
+metadata:
+  name: redissingle-sample
+spec:
+  replicas: 2
+  image:
