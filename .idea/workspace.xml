@@ -6,11 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="9c7d2ff7-67bf-407d-a83e-647f1e53b621" name="变更" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/redis-operator/single/api/v1/redissingle_types.go" beforeDir="false" afterPath="$PROJECT_DIR$/redis-operator/single/api/v1/redissingle_types.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/redis-operator/single/config/samples/app_v1_redissingle.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/redis-operator/single/config/samples/app_v1_redissingle.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/redis-operator/single/controllers/redissingle_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/redis-operator/single/controllers/redissingle_controller.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/redis-operator/single/controllers/resources.go" beforeDir="false" afterPath="$PROJECT_DIR$/redis-operator/single/controllers/resources.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/redis-operator/single/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/redis-operator/single/main.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
