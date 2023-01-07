@@ -6,12 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="9c7d2ff7-67bf-407d-a83e-647f1e53b621" name="变更" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/redis-operator/statefulset/api/v1/zz_generated.deepcopy.go" beforeDir="false" afterPath="$PROJECT_DIR$/redis-operator/statefulset/api/v1/zz_generated.deepcopy.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/redis-operator/statefulset/config/samples/app_v1_redissts.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/redis-operator/statefulset/config/samples/app_v1_redissts.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/redis-operator/statefulset/controllers/redissts_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/redis-operator/statefulset/controllers/redissts_controller.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/redis-operator/statefulset/controllers/resources.go" beforeDir="false" afterPath="$PROJECT_DIR$/redis-operator/statefulset/controllers/resources.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/redis-operator/statefulset/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/redis-operator/statefulset/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/redis-operator/statefulset/yaml/redis-statefulset.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/redis-operator/statefulset/yaml/redis-statefulset.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mysql-operator/master-slave/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/mysql-operator/master-slave/Makefile" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,11 +63,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/learndo/crd-controller/manifests" />
       <recent name="$PROJECT_DIR$/client-go/k8s_source_code/informer" />
       <recent name="$PROJECT_DIR$/client-go/k8s_source_code/indexer" />
       <recent name="$PROJECT_DIR$/client-go/k8s_source_code/DeltaFifo" />
-      <recent name="$PROJECT_DIR$/client-go/k8s_source_code/reflector" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
