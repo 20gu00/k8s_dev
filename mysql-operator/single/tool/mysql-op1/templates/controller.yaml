@@ -27,7 +27,7 @@ spec:
         - /manager
         args:
         - --enable-leader-election
-        image: 010101010007/mysql-op2:v1.0.0
+        image: 010101010007/mysql-op3:v1.0.0
         name: manager
         resources:
           limits:
