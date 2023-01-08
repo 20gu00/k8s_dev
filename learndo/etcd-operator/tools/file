@@ -139,3 +139,6 @@ make run
 kubectl apply -f config/samples/aaa
 
 go get go.etcd.io/etcd/clientv3
+
+controller-gen(不是code gen)
+在kubernetes-sigs下 crontoller-tools kustmize 可以自行编译
