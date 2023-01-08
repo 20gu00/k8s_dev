@@ -6,7 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="9c7d2ff7-67bf-407d-a83e-647f1e53b621" name="变更" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysql-operator/single/config/manager/kustomization.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/mysql-operator/single/config/manager/kustomization.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mysql-operator/single/tool/mysql-op1-0.1.0.tgz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mysql-operator/single/tool/mysql-op1/Chart.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/mysql-operator/single/tool/mysql-op1/Chart.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mysql-operator/single/tool/mysql-op1/templates/controller.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/mysql-operator/single/tool/mysql-op1/templates/controller.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/test.go" beforeDir="false" afterPath="$PROJECT_DIR$/test/test.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,6 +62,7 @@
     <property name="go.vendoring.notification.had.been.shown" value="true" />
     <property name="go.watchers.conflict.with.on.save.actions.check.performed" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="go.vgo" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
@@ -115,5 +119,10 @@
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
+    <environment>
+      <map>
+        <entry key="GOPROXY" value="http://goproxy.cn,direct" />
+      </map>
+    </environment>
   </component>
 </project>

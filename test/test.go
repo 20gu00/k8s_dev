@@ -60,7 +60,7 @@ func NewMysqlSinglePvPvc() {
 			PersistentVolumeReclaimPolicy: corev1.PersistentVolumeReclaimRetain,
 			//切片
 			AccessModes: []corev1.PersistentVolumeAccessMode{
-				corev1.ReadWriteMany,
+				corev1.ReadWriteOnce,
 			},
 		},
 	}, metav1.CreateOptions{})
@@ -73,7 +73,7 @@ func NewMysqlSinglePvPvc() {
 			Spec: corev1.PersistentVolumeClaimSpec{
 				StorageClassName: &storageName,
 				AccessModes: []corev1.PersistentVolumeAccessMode{
-					corev1.ReadWriteMany,
+					corev1.ReadWriteOnce,
 				},
 				Resources: corev1.ResourceRequirements{
 					Requests: corev1.ResourceList{
