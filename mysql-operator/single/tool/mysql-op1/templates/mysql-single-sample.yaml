@@ -1,0 +1,10 @@
+apiVersion: cjqapp.cjq.io/v1  #GV G:group.domain
+kind: MysqlSingle
+metadata:
+  name: mysqlsingle-sample
+spec:
+  #replicas: 2
+  #mysql5.7
+  image: "mysql:5.7"
+  mysqlPassword: "100.Acjq"
+

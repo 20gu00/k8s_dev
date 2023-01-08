@@ -4,5 +4,5 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 images:
 - name: controller
-  newName: 010101010007/mysql-single
-  newTag: v1
+  newName: 010101010007/mysql-op1
+  newTag: v1.0.0
