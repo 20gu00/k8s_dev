@@ -70,7 +70,7 @@ func (w *WebhookSrv) Handler(writer http.ResponseWriter, request *http.Request) 
 	if _, _, err := deserializer.Decode(body, nil, &requestAdmissionReview); err != nil {
 		klog.Error("未能正确解码body成admissionReview数据")
 		admissionResponse = &admissionV1.AdmissionResponse{
-			Result: metav1.Status{
+			Result: &metav1.Status{
 				Code:    http.StatusInternalServerError,
 				Message: err.Error(),
 			},
