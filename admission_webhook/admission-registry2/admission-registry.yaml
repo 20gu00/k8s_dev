@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admission-registry
+  labels:
+    app: admission-registry
+spec:
+  selector:
+    matchLabels:
+      app: admission-registry
+  template:
+    metadata:
+      labels:
+        app: admission-registry
+    spec:
+      containers:
+        - name: whitelist
+          image: 010101010007/admission-registry:v0.0.2
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: WHITELIST_REGISTRIES
+              value: "docker.io,gcr.io"
+          ports:
+            - containerPort: 443
+          volumeMounts:
+            - name: webhook-certs
+              mountPath: /etc/webhook/certs
+              readOnly: true
+      volumes:
+        - name: webhook-certs
+          secret:
+            secretName: admission-registry-tls
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admission-registry
+  labels:
+    app: admission-registry
+spec:
+  ports:
+    - port: 443
+      targetPort: 443
+  selector:
+    app: admission-registry

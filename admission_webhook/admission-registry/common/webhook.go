@@ -37,10 +37,13 @@ type WebhookSrv struct {
 	// 请求的白名单
 }
 
+// handler 函数中会根据传入的 PATH 来决定调用的逻辑
 func (w *WebhookSrv) Handler(writer http.ResponseWriter, request *http.Request) {
-	var body []byte
+	var body []byte // nil
 	if request.Body != nil {
-		if body, err := ioutil.ReadAll(request.Body); err != nil {
+		//:=不同body,注意处理上面的容器为nil
+		if data, err := ioutil.ReadAll(request.Body); err != nil {
+			body = data
 			if len(body) == 0 {
 				klog.Error("空的body")
 				// http响应
@@ -48,23 +51,24 @@ func (w *WebhookSrv) Handler(writer http.ResponseWriter, request *http.Request) 
 				return
 			}
 			klog.Error("获取body信息失败")
-			http.Error(writer, "空的body", http.StatusBadRequest)
+			http.Error(writer, "获取body信息失败", http.StatusBadRequest)
 			return
 		}
 	}
-	body = body
+	// body = data
 	// 校验content-type
 	// 从准入控制器传递过来给我们自定义的admission webhook 是json字符串,但实际格式是admission review
 	if contentType := request.Header.Get("Content-Type"); contentType != "application/json" {
-		klog.Error("content-type is %s ,but expect application/json", contentType)
+		klog.Errorf("content-type is %s ,but expect application/json", contentType)
 		http.Error(writer, "content-type error ,expect application/json", http.StatusBadRequest)
 	}
 
 	// validate mutate请求的数据(交互,与admission controller之间,请求响应都是AdmissionReview)
 	// 数据编码
 	//准入控制器发送request也就是AdmissionRequstReview给我们admission webhook,反之就是admissionReponseReview
-	var admissionResponse *admissionV1.AdmissionResponse
 
+	//var admissionResponse *admissionV1.AdmissionResponse
+	admissionResponse := new(admissionV1.AdmissionResponse)
 	// 获取请求过来的admissionReview
 	requestAdmissionReview := admissionV1.AdmissionReview{}
 	if _, _, err := deserializer.Decode(body, nil, &requestAdmissionReview); err != nil {
@@ -99,7 +103,7 @@ func (w *WebhookSrv) Handler(writer http.ResponseWriter, request *http.Request) 
 			responseAdmissionReview.Response.UID = requestAdmissionReview.Request.UID
 		}
 	}
-	klog.Info(fmt.Sprintf("正在返回reponse数据: %v"), responseAdmissionReview.Response)
+	klog.Info(fmt.Sprintf("正在返回reponse数据: %v", responseAdmissionReview.Response))
 	respBytes, err := json.Marshal(responseAdmissionReview)
 	if err != nil {
 		klog.Error("response admission review不能正确编码json")
@@ -110,8 +114,8 @@ func (w *WebhookSrv) Handler(writer http.ResponseWriter, request *http.Request) 
 	klog.Info("响应准备好了...")
 	// 返回响应
 	if _, err := writer.Write(respBytes); err != nil {
-		klog.Error("返回响应失败: %v", err)
-		klog.Error(writer, fmt.Sprintf("返回响应失败: %v", err), http.StatusInternalServerError)
+		klog.Errorf("返回响应失败: %v", err)
+		http.Error(writer, fmt.Sprintf("返回响应失败: %v", err), http.StatusInternalServerError)
 	}
 }
 
@@ -124,13 +128,13 @@ func (w *WebhookSrv) validate(ar *admissionV1.AdmissionReview) *admissionV1.Admi
 		msg     = ""
 	)
 	// req.Kind是admission review的group version kind
-	klog.Info("request admission review: kind=%s,ns=%s,name=%v,uid=%v", req.Kind.Kind, req.Namespace, req.Name, req.UID)
+	klog.Infof("request admission review: kind=%s,ns=%s,name=%v,uid=%v,Operation=%v UserInfo=%v", req.Kind.Kind, req.Namespace, req.Name, req.UID, req.Operation, req.UserInfo)
 
 	// 规则,判断镜像仓库,也就是校验pod
 	var pod corev1.Pod
 	// 获取原始的数据
 	if err := json.Unmarshal(req.Object.Raw, &pod); err != nil {
-		klog.Error("未能获取object的raw数据: %v", err)
+		klog.Errorf("未能获取object的raw数据: %v", err)
 		allowed = false
 		code = http.StatusBadRequest
 		return &admissionV1.AdmissionResponse{

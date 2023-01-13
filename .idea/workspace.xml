@@ -6,7 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="9c7d2ff7-67bf-407d-a83e-647f1e53b621" name="变更" comment="变更">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/admission_webhook/admission-registry/admission-registry" beforeDir="false" afterPath="$PROJECT_DIR$/admission_webhook/admission-registry/admission-registry" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/admission_webhook/admission-registry/admission-registry.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/admission_webhook/admission-registry/admission-registry.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/admission_webhook/admission-registry/common/webhook.go" beforeDir="false" afterPath="$PROJECT_DIR$/admission_webhook/admission-registry/common/webhook.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/admission_webhook/admission-registry/validateting-webhook.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/admission_webhook/admission-registry/validateting-webhook.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,24 +61,24 @@
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.vendoring.notification.had.been.shown" value="true" />
     <property name="go.watchers.conflict.with.on.save.actions.check.performed" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/admission_webhook/admission-registry2" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/admission_webhook/admission-registry2" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/learndo/crd-controller/manifests" />
       <recent name="$PROJECT_DIR$/client-go/k8s_source_code/informer" />
       <recent name="$PROJECT_DIR$/client-go/k8s_source_code/indexer" />
-      <recent name="$PROJECT_DIR$/client-go/k8s_source_code/DeltaFifo" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/admission_webhook" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/redis-operator/single/yaml" />
       <recent name="$PROJECT_DIR$/learndo/crd-controller" />
       <recent name="$PROJECT_DIR$/learndo/crd-controller/hack" />
-      <recent name="$PROJECT_DIR$/learndo" />
     </key>
   </component>
   <component name="RunManager">

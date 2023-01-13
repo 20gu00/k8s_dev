@@ -4,7 +4,7 @@ kind: ValidatingWebhookConfiguration
 metadata:
   name: admission-registry
 webhooks:
-  - name: io.ydzs.admission-registry
+  - name: io.ydzs.admission-registry  # 唯一即可
     rules:
       # webhook操作资源的权限
       - apiGroups:   [""]

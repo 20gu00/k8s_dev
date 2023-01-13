@@ -18,7 +18,7 @@ spec:
           image: 010101010007/admission-registry:v0.0.1
           imagePullPolicy: IfNotPresent
           env:
-            - name: WHITELIST_REGISTRIES
+            - name: WHITEIPS_REGISTRY
               value: "docker.io,gcr.io"
           ports:
             - containerPort: 443

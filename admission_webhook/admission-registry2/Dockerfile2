@@ -1,0 +1,4 @@
+#alpine scratch多阶段构建
+FROM centos
+ADD ./admission-registry .
+ENTRYPOINT ["./admission-registry"]
