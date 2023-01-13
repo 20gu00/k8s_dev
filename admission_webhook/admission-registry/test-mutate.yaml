@@ -1,0 +1,56 @@
+# test-deploy1.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-deploy1
+spec:
+  selector:
+    matchLabels:
+      app: test1-mutate
+  template:
+    metadata:
+      labels:
+        app: test1-mutate
+    spec:
+      containers:
+        - name: mutate
+          image: docker.io/nginx:1.7.9
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-svc1
+spec:
+  selector:
+    app: test1-mutate
+  ports:
+    - port: 80
+      targetPort: 80
+  type: ClusterIP
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-deploy2
+  annotations:
+    io.ydzs.admission-registry/mutate: "no"
+spec:
+  selector:
+    matchLabels:
+      app: test2-mutate
+  template:
+    metadata:
+      labels:
+        app: test2-mutate
+    spec:
+      containers:
+        - name: mutate
+          image: docker.io/nginx:1.7.9
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
