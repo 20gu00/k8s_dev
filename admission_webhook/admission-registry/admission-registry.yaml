@@ -13,6 +13,15 @@ spec:
       labels:
         app: admission-registry
     spec:
+#      initContainers:
+#        - name: xxx
+#          image: xxx
+#          imagePullPolicy: IfNotPresent
+#          # 初始化容器自身执行完毕就退出了不会留下任何东西,这里使用了volume
+#          volumeMounts:
+#            - name: webhook-certs
+#              mountPath: /etc/webhook/certs
+#              readOnly: true
       containers:
         - name: whitelist
           image: 010101010007/admission-registry:v0.0.3
@@ -30,6 +39,8 @@ spec:
         - name: webhook-certs
           secret:
             secretName: admission-registry-tls
+          # 可以换掉secret
+          #emptyDir{}
 ---
 apiVersion: v1
 kind: Service
