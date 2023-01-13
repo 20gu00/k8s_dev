@@ -124,7 +124,7 @@ func (w *WebhookSrv) validate(ar *admissionV1.AdmissionReview) *admissionV1.Admi
 		msg     = ""
 	)
 	// req.Kind是admission review的group version kind
-	klog.Info("request admission review: kind=%s,ns=%s,name=%s,uid=%s", req.Kind.Kind, req.Namespace, req.Name, req.UID)
+	klog.Info("request admission review: kind=%s,ns=%s,name=%v,uid=%v", req.Kind.Kind, req.Namespace, req.Name, req.UID)
 
 	// 规则,判断镜像仓库,也就是校验pod
 	var pod corev1.Pod

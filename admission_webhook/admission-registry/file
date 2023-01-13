@@ -1,0 +1,290 @@
+webhook 要求是通过 HTTPS 暴露服务
+
+安装cfssl
+wget -q --show-progress --https-only --timestamping \
+  https://pkg.cfssl.org/R1.2/cfssl_linux-amd64 \
+  https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64
+
+
+chmod +x cfssl_linux-amd64 cfssljson_linux-amd64
+mv cfssl_linux-amd64 /usr/local/bin/cfssl
+mv cfssljson_linux-amd64 /usr/local/bin/cfssljson
+
+
+
+创建 CA 证书机构
+➜  cat > ca-config.json <<EOF
+{
+  "signing": {
+    "default": {
+      "expiry": "8760h"
+    },
+    "profiles": {
+      "server": {
+        "usages": ["signing", "key encipherment", "server auth", "client auth"],
+        "expiry": "8760h"
+      }
+    }
+  }
+}
+EOF
+
+➜  cat > ca-csr.json <<EOF
+{
+    "CN": "kubernetes",
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "names": [
+        {
+            "C": "CN",
+            "L": "BeiJing",
+            "ST": "BeiJing",
+            "O": "k8s",
+            "OU": "System"
+        }
+    ]
+}
+EOF
+
+生成 CA 证书和私钥
+cfssl gencert -initca ca-csr.json | cfssljson -bare ca
+ls -la *.pem
+
+
+
+
+
+
+创建 Server 端证书
+cat > server-csr.json <<EOF
+{
+  "CN": "admission",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+        "C": "CN",
+        "L": "BeiJing",
+        "ST": "BeiJing",
+        "O": "k8s",
+        "OU": "System"
+    }
+  ]
+}
+EOF
+
+
+
+
+
+
+cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json \
+		-hostname=admission-registry.default.svc -profile=server server-csr.json | cfssljson -bare server
+
+
+
+ls -la *.pem
+其中最重要的就是 -hostname 的值，格式为  {service-name}.{service-namespace}.svc，其中 service-name 代表你 webhook 的 Service 名字，service-namespace 代表你 webhook 的命名空间。
+
+
+
+使用生成的 server 证书和私钥创建一个 Secret 对象
+kubectl create secret tls admission-registry-tls \
+        --key=server-key.pem \
+        --cert=server.pem
+
+通过 Volumes 的形式将 Secret 挂载到 webhook 的容器中指定的位置给 webhook 使用即可。
+
+
+
+
+将 webhook 打包成 Docker 镜像，并使用一个 Deployment 来运行这个容器应用即可
+# Build the webhook binary
+FROM golang:1.13 as builder
+
+RUN apt-get -y update && apt-get -y install upx
+
+WORKDIR /workspace
+# Copy the Go Modules manifests
+COPY go.mod go.mod
+COPY go.sum go.sum
+
+# Copy the go source
+COPY main.go main.go
+COPY server/ server/
+
+# Build
+ENV CGO_ENABLED=0
+ENV GOOS=linux
+ENV GOARCH=amd64
+ENV GO111MODULE=on
+ENV GOPROXY="https://goproxy.cn"
+
+# cache deps before building and copying source so that we don't need to re-download as much
+# and so that source changes don't invalidate our downloaded layer
+RUN go mod download && \
+    go build -a -o admission-registry main.go && \
+    upx admission-registry
+
+FROM alpine:3.9.2
+COPY --from=builder /workspace/admission-registry .
+ENTRYPOINT ["/admission-registry"]
+
+
+
+
+
+
+
+
+现在 webhook 的镜像已经准备好了，接下来我们就需要将其部署到 Kubernetes 集群中，这里我们使用 Deployment + Service 来提供服务即可，在 Pod 的规范中配置环境变量 WHITELIST_REGISTRIES 来定义白名单镜像仓库地址，然后将证书通过 Secret 的 Volumes 形式挂载到 Pod 容器中，对应的资源清单文件如下所示：
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admission-registry
+  labels:
+    app: admission-registry
+spec:
+  selector:
+    matchLabels:
+      app: admission-registry
+  template:
+    metadata:
+      labels:
+        app: admission-registry
+    spec:
+      containers:
+        - name: whitelist
+          image: cnych/admission-registry:v0.0.1
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: WHITELIST_REGISTRIES
+            value: "docker.io,gcr.io"
+          ports:
+          - containerPort: 443
+          volumeMounts:
+          - name: webhook-certs
+            mountPath: /etc/webhook/certs
+            readOnly: true
+      volumes:
+        - name: webhook-certs
+          secret:
+            secretName: admission-registry-tls
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admission-registry
+  labels:
+    app: admission-registry
+spec:
+  ports:
+  - port: 443
+    targetPort: 443
+  selector:
+    app: admission-registry
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### 注册 webhook
+
+上面我们只是单纯将我们实现的 webhook 部署到了 Kubernetes 集群中，但是还并没有和 `ValidatingWebhook` 对接起来，要将我们上面实现的服务注册到 `ValidatingWebhook` 中只需要创建一个类型为 `ValidatingWebhookConfiguration` 的 Kubernetes 资源对象即可，在这个对象中就可以来配置我们的 webhook 这个服务。
+
+如下所示，我们将 webhook 命名为 `io.ydzs.admission-registry` ，只需要保证在集群中名称唯一即可。然后在 rules 属性下面就是来指定在什么条件下使用该 webhook 的配置，这里我们只需要在创建 Pod 的时候才调用这个 webhook。此外在 `ClientConfig` 属性下我们还需要指定 Kubernetes APIServer 如何来找到我们的 webhook 服务，这里我们将通过一个在 default 命名空间下面的名为 admission-registry 的 Service 服务在 `/validate` 路径下面提供服务，此外还指定了一个 caBundle 的属性，这个属性通过指定一个 PEM 格式的 CA bundle 来表示 APIServer 作为客户端可以使用它来验证我们的 webhook 应用上的服务器证书。对应的注册 webhook 的资源清单如下所示：
+# validatingwebhook.yaml
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: admission-registry
+webhooks:
+- name: io.ydzs.admission-registry
+  rules:
+  - apiGroups:   [""]
+    apiVersions: ["v1"]
+    operations:  ["CREATE"]
+    resources:   ["pods"]
+  clientConfig:
+    service:
+      namespace: default
+      name: admission-registry
+      path: "/validate"
+    caBundle: CA_BUNDLE
+  admissionReviewVersions: ["v1"]
+  sideEffects: None
+
+上面的 CA_BUNDLE 值使用的是上面生成 ca.crt 文件内容的 base64 值：
+cat ca.pem | base64
+
+
+
+
+
+测试
+# test-pod1.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pod1
+spec:
+  containers:
+  - name: nginx
+    image: docker.io/nginx:latest
+
+
+
+清理
+kubectl delete -f validatingwebhook.yaml
+kubectl delete -f webhook.yaml
+upx压缩包
+多阶段编译 交叉编译,本地编译成二进制文件,在随便丢到一个基础镜像中运行
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+logs -f

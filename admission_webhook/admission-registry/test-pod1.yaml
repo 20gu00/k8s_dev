@@ -1,0 +1,9 @@
+# test-pod1.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pod1
+spec:
+  containers:
+    - name: nginx
+      image: docker.io/nginx:latest

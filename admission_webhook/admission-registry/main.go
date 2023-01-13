@@ -1,4 +1,4 @@
-package admission_registry
+package main
 
 import (
 	"context"
@@ -19,8 +19,8 @@ func main() {
 	//生产环境很多都是加密
 	//加密端口 证书 私钥文件
 	flag.IntVar(&param.Port, "port", 443, "webhook server port")
-	flag.StringVar(&param.CertFile, "tlsCertFile", "/etc/wehook/certstls.crt", "x509 certfile")
-	flag.StringVar(&param.KeyFile, "tlsKeyFile", "/etc/webhook/tls.key", "x509 private key file")
+	flag.StringVar(&param.CertFile, "tlsCertFile", "/etc/webhook/certs/tls.crt", "x509 certfile")
+	flag.StringVar(&param.KeyFile, "tlsKeyFile", "/etc/webhook/certs/tls.key", "x509 private key file")
 	flag.Parse()
 
 	//处理证书和私钥,类似与颁发证书
@@ -51,16 +51,17 @@ func main() {
 
 	go func() {
 		// 本身这里就会阻塞
-		if err := WebhookServer.Server.ListenAndServeTLS("", "")err != nil {
+		// 上面已经定义好了
+		if err := WebhookServer.Server.ListenAndServeTLS("", ""); err != nil {
 			klog.Errorf("启动server失败 %v", err)
 		}
 	}()
 
-	klog.Errorf("server启动了")
+	klog.Info("server启动了")
 
 	quit := make(chan os.Signal, 2)
 	//SIGINT SIGTERM
-	signal.Notify(quit, os, os.Interrupt)
+	signal.Notify(quit, os.Interrupt)
 	<-quit
 	klog.Errorf("优雅关闭...")
 	go func() {
