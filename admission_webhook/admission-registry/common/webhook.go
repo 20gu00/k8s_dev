@@ -43,8 +43,7 @@ func (w *WebhookSrv) Handler(writer http.ResponseWriter, request *http.Request) 
 	if request.Body != nil {
 		//:=不同body,注意处理上面的容器为nil
 		if data, err := ioutil.ReadAll(request.Body); err != nil {
-			body = data
-			if len(body) == 0 {
+			if len(data) == 0 {
 				klog.Error("空的body")
 				// http响应
 				http.Error(writer, "空的body", http.StatusBadRequest)
@@ -53,9 +52,10 @@ func (w *WebhookSrv) Handler(writer http.ResponseWriter, request *http.Request) 
 			klog.Error("获取body信息失败")
 			http.Error(writer, "获取body信息失败", http.StatusBadRequest)
 			return
+		} else {
+			body = data
 		}
 	}
-	// body = data
 	// 校验content-type
 	// 从准入控制器传递过来给我们自定义的admission webhook 是json字符串,但实际格式是admission review
 	if contentType := request.Header.Get("Content-Type"); contentType != "application/json" {
@@ -147,7 +147,8 @@ func (w *WebhookSrv) validate(ar *admissionV1.AdmissionReview) *admissionV1.Admi
 	}
 
 	// 业务逻辑
-	for _, container := range pod.Spec.InitContainers {
+	// InitContainers
+	for _, container := range pod.Spec.Containers {
 		var whiteList = false
 		for _, whiteIP := range w.RegistryWhiteIp {
 			// 前缀
@@ -158,7 +159,7 @@ func (w *WebhookSrv) validate(ar *admissionV1.AdmissionReview) *admissionV1.Admi
 			// 没有命中白名单
 			if !whiteList {
 				allowed = false
-				code = http.StatusFound
+				code = http.StatusForbidden
 				msg = fmt.Sprintf("%s image来自的镜像仓库不受信任,只信任来自%s的镜像", container.Image, w.RegistryWhiteIp)
 				break // 任意一个都可以处理了
 			}
