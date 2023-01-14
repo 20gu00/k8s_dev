@@ -1,0 +1,121 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sample-scheduler-sa
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sample-scheduler-crb
+subjects:
+  - kind: ServiceAccount
+    name: sample-scheduler-sa
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: system:kube-scheduler
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sample-scheduler-crb-volume-scheduler
+subjects:
+  - kind: ServiceAccount
+    name: sample-scheduler-sa
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: system:volume-scheduler
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scheduler-config
+  namespace: kube-system
+data:
+  scheduler-config.yaml: |
+    apiVersion: kubescheduler.config.k8s.io/v1beta1
+    kind: KubeSchedulerConfiguration
+    leaderElection:
+      leaderElect: true
+      leaseDuration: 15s
+      renewDeadline: 10s
+      resourceLock: endpointsleases
+      resourceName: sample-scheduler
+      resourceNamespace: kube-system
+      retryPeriod: 2s
+    profiles:
+      - schedulerName: sample-scheduler
+        plugins:
+          preFilter:
+            enabled:
+              - name: "sample-plugin"
+          filter:
+            enabled:
+              - name: "sample-plugin"
+        pluginConfig:
+          - name: sample-plugin
+            args:  # runtime.Object
+              favorColor: "#326CE5"
+              favorNumber: 7
+              thanksTo: "Kubernetes"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-scheduler
+  namespace: kube-system
+  labels:
+    component: sample-scheduler
+spec:
+  selector:
+    matchLabels:
+      component: sample-scheduler
+  template:
+    metadata:
+      labels:
+        component: sample-scheduler
+    spec:
+      serviceAccountName: sample-scheduler-sa
+      priorityClassName: system-cluster-critical
+      volumes:
+        - name: scheduler-config
+          configMap:
+            name: scheduler-config
+      containers:
+        - name: scheduler
+          image: cnych/sample-scheduler:v0.2.4
+          imagePullPolicy: IfNotPresent
+          command:
+            - sample-scheduler
+            - --config=/etc/kubernetes/scheduler-config.yaml  # 调度器的配置文件
+            - --v=3
+          volumeMounts:
+            - name: scheduler-config
+              mountPath: /etc/kubernetes
+#          livenessProbe:
+#            httpGet:
+#              path: /healthz
+#              port: 10251
+#            initialDelaySeconds: 15
+#          readinessProbe:
+#            httpGet:
+#              path: /healthz
+#              port: 10251
+
+
+apply即可
+  $ kubectl apply -f sample-scheduler.yaml
+  serviceaccount/sample-scheduler-sa created
+  clusterrolebinding.rbac.authorization.k8s.io/sample-scheduler-crb created
+  clusterrolebinding.rbac.authorization.k8s.io/sample-scheduler-crb-volume-scheduler created
+  configmap/scheduler-config created
+  deployment.apps/sample-scheduler created
+  $ kubectl get pods -n kube-system -l component=sample-scheduler
+  NAME                               READY   STATUS    RESTARTS   AGE
+  sample-scheduler-896658cd7-v7jdk   1/1     Running   0          38m
+  
+  部署完成后，当我们创建 Pod 的时候就可以指定使用我们这里自定义的调度器了

@@ -96,7 +96,7 @@ spec:
       targetPort: 443
   selector:
     app: admission-registry
-    
+
 
 #  对于证书轮换的情况，对于向服务器容器提供此证书所采用的每种方法，方法将有所不同：
 #  重启 pod相当于换了个新的生命周期

@@ -1,0 +1,294 @@
+其实要实现一个调度框架的插件，并不难，我们只要实现对应的调度框架扩展点即可，然后将插件注册到调度器中即可，前面章节中我们已经知道了调度器会根据调度框架在一些扩展点上默认启用一些插件，如果我们自己来自定义一个插件的话，如何让调度器识别我们的代码呢？
+
+其实默认的调度器已经为我们预留了这样的入口，在 `kube-scheduler` 的源文件 `cmd/kube-scheduler/app/server.go` 中有一个 `NewSchedulerCommand` 入口函数，其中的参数是一个类型为 `Option` 的列表，而这个 `Option` 恰好就是一个用于插件配置的回调函数：
+
+// cmd/kube-scheduler/app/server.go
+
+// Option configures a framework.Registry.
+type Option func(framework.Registry) error
+
+// NewSchedulerCommand creates a *cobra.Command object with default parameters and registryOptions
+func NewSchedulerCommand(registryOptions ...Option) *cobra.Command {
+  opts, err := options.NewOptions()
+  ......
+}
+
+
+
+
+我们可以将自定义的插件通过 Option 传给 NewSchedulerCommand 函数，在调度器初始化的时候会调用 WithFrameworkOutOfTreeRegistry 函数传递给调度器的 frameworkOutOfTreeRegistry 属性，该属性包含了我们自定义的 out-of-tree  插件，最终会和内置的 in-tree 插件进行合并。
+
+// pkg/scheduler/scheduler.go
+
+// 该函数用来设置 out-of-tree 插件，这些插件会被添加到默认的 registry 中去。
+func WithFrameworkOutOfTreeRegistry(registry frameworkruntime.Registry) Option {
+	return func(o *schedulerOptions) {
+		o.frameworkOutOfTreeRegistry = registry
+	}
+}
+
+
+
+
+所以如果是我们自定义插件的话是不用从头开始去实现的，可以直接使用默认的调度器代码即可，以默认调度器的入口来作为我们的函数入口，并且传入我们自己实现的插件作为参数即可。
+
+在调度器初始化的文件中就提供了一个 `WithPlugin` 函数可以用来注册插件，最后返回一个 `Option` 实例，我们可以借助这个函数来给调度器传递自定义插件的参数：
+// cmd/kube-scheduler/app/server.go
+
+// WithPlugin 根据插件名称和工厂方法创建一个 Option
+// 可以用这个函数来注册 out-of-tree 插件。
+func WithPlugin(name string, factory runtime.PluginFactory) Option {
+	return func(registry runtime.Registry) error {
+		return registry.Register(name, factory)
+	}
+}
+
+
+
+
+
+
+
+k8s.io/kubernetes v1.19.9  -->  k8s.io/api v0.19.9
+
+
+go get k8s.io/kubernetes@v1.19.9会下载依赖的包,但是kubernetes包管理混乱,会报错,所以最好自己在go.mod指定版本
+
+
+
+require (
+	github.com/spf13/pflag v1.0.5
+	k8s.io/api v0.19.9
+	k8s.io/apimachinery v0.19.9
+	k8s.io/component-base v0.19.9
+  k8s.io/klog/v2 v2.2.0
+	k8s.io/kube-scheduler v0.19.9 // indirect
+	k8s.io/kubernetes v1.19.9
+)
+
+replace (
+	k8s.io/api => k8s.io/api v0.19.9
+	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.19.9
+	k8s.io/apimachinery => k8s.io/apimachinery v0.19.9
+	k8s.io/apiserver => k8s.io/apiserver v0.19.9
+	k8s.io/cli-runtime => k8s.io/cli-runtime v0.19.9
+	k8s.io/client-go => k8s.io/client-go v0.19.9
+	k8s.io/cloud-provider => k8s.io/cloud-provider v0.19.9
+	k8s.io/cluster-bootstrap => k8s.io/cluster-bootstrap v0.19.9
+	k8s.io/code-generator => k8s.io/code-generator v0.19.9
+	k8s.io/component-base => k8s.io/component-base v0.19.9
+	k8s.io/cri-api => k8s.io/cri-api v0.19.9
+	k8s.io/csi-translation-lib => k8s.io/csi-translation-lib v0.19.9
+	k8s.io/kube-aggregator => k8s.io/kube-aggregator v0.19.6
+	k8s.io/kube-controller-manager => k8s.io/kube-controller-manager v0.19.9
+	k8s.io/kube-proxy => k8s.io/kube-proxy v0.19.9
+	k8s.io/kube-scheduler => k8s.io/kube-scheduler v0.19.9
+	k8s.io/kubectl => k8s.io/kubectl v0.19.9
+	k8s.io/kubelet => k8s.io/kubelet v0.19.9
+	k8s.io/legacy-cloud-providers => k8s.io/legacy-cloud-providers v0.19.9
+	k8s.io/metrics => k8s.io/metrics v0.19.9
+	k8s.io/sample-apiserver => k8s.io/sample-apiserver v0.19.9
+)
+
+再go get k8s.io/kubernetes@v1.20.10即可
+依赖的包版本不明确就能像上面一样指定
+注意go mod tidy会删除不使用的包
+
+
+
+
+/etc/kubernetes/manifests/kube-scheduler.yaml写入- --write-config-to=/etc/kubernetes/scheduler-config.yaml
+
+
+
+
+
+
+
+
+调度器插件部署:
+现在我们将插件编写好了，那么如何把包含我们插件的调度器运行起来呢？前面我们在分析调度器启动流程的时候，其中有一个 `--write-config-to` 的参数，可以把调度配置的值写入到指定文件中，我们可以用这个参数来查看下调度器的配置文件，然后再根据配置来添加上我们编写的插件。
+
+修改调度器静态 Pod 的资源清单文件 `/etc/kubernetes/manifests/kube-scheduler.yaml`
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    component: kube-scheduler
+    tier: control-plane
+  name: kube-scheduler
+  namespace: kube-system
+spec:
+  containers:
+  - command:
+    - kube-scheduler
+    - --authentication-kubeconfig=/etc/kubernetes/scheduler.conf
+    - --authorization-kubeconfig=/etc/kubernetes/scheduler.conf
+    - --bind-address=0.0.0.0
+    - --kubeconfig=/etc/kubernetes/scheduler.conf
+    # 将配置文件写入到scheduler-config.yaml文件种
+    - --write-config-to=/etc/kubernetes/scheduler-config.yaml
+    - --leader-elect=true
+    - --port=0
+    image: registry.aliyuncs.com/k8sxio/kube-scheduler:v1.19.9
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 8
+      httpGet:
+        host: 127.0.0.1
+        path: /healthz
+        port: 10259
+        scheme: HTTPS
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 15
+        host: 127.0.0.1
+    name: kube-scheduler
+    resources:
+      requests:
+        cpu: 100m
+    startupProbe:
+      failureThreshold: 24
+      httpGet:
+        host: 127.0.0.1
+        path: /healthz
+        port: 10259
+        scheme: HTTPS
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 15
+    volumeMounts:
+    - mountPath: /etc/kubernetes/scheduler.conf
+      name: kubeconfig
+      readOnly: true
+    - mountPath: /etc/kubernetes/scheduler-config.yaml
+      name: scheduler-config
+  hostNetwork: true
+  priorityClassName: system-node-critical
+  volumes:
+  - hostPath:
+      path: /etc/kubernetes/scheduler.conf
+      type: FileOrCreate
+    name: kubeconfig
+  - hostPath:  # 将配置文件挂载到宿主机上去
+      path: /etc/kubernetes/scheduler-config.yaml
+      type: FileOrCreate
+    name: scheduler-config
+
+
+
+修改完成后会在宿主机下面生成一个 `/etc/kubernetes/scheduler-config.yaml` 文件，不过由于有了这个参数后调度器执行后就会直接退出所以调度器现在是不可用的状态，得到了这个文件后，应该立刻恢复调度器之前的配置。
+
+生成的配置文件如下所示：
+apiVersion: kubescheduler.config.k8s.io/v1beta1
+clientConnection:
+  acceptContentTypes: ""
+  burst: 100
+  contentType: application/vnd.kubernetes.protobuf
+  kubeconfig: /etc/kubernetes/scheduler.conf
+  qps: 50
+enableContentionProfiling: true
+enableProfiling: true
+healthzBindAddress: ""
+kind: KubeSchedulerConfiguration
+leaderElection:
+  leaderElect: true
+  leaseDuration: 15s
+  renewDeadline: 10s
+  resourceLock: endpointsleases
+  resourceName: kube-scheduler
+  resourceNamespace: kube-system
+  retryPeriod: 2s
+metricsBindAddress: ""
+percentageOfNodesToScore: 0
+podInitialBackoffSeconds: 1
+podMaxBackoffSeconds: 10
+profiles:
+- pluginConfig:
+  - args:
+      apiVersion: kubescheduler.config.k8s.io/v1beta1
+      hardPodAffinityWeight: 1
+      kind: InterPodAffinityArgs
+    name: InterPodAffinity
+  schedulerName: default-scheduler
+
+
+
+上面的配置文件是默认调度器的配置，现在要使用我们自己的调度器只需要使用这个配置文件来添加我们自己的配置，将 sample 插件配置上即可
+apiVersion: kubescheduler.config.k8s.io/v1beta1
+kind: KubeSchedulerConfiguration
+clientConnection:
+  acceptContentTypes: ""
+  burst: 100
+  contentType: application/vnd.kubernetes.protobuf
+  kubeconfig: /etc/kubernetes/scheduler.conf
+  qps: 50
+enableContentionProfiling: true
+enableProfiling: true
+healthzBindAddress: ""
+leaderElection:
+  leaderElect: true
+  leaseDuration: 15s
+  renewDeadline: 10s
+  resourceLock: endpointsleases
+  resourceName: kube-scheduler
+  resourceNamespace: kube-system
+  retryPeriod: 2s
+metricsBindAddress: ""
+percentageOfNodesToScore: 0
+podInitialBackoffSeconds: 1
+podMaxBackoffSeconds: 10
+profiles:
+- pluginConfig:
+  - args:
+      favorColor: "#326CE5
+      favorNumber: 7
+      thanksTo: "Kubernetes"
+    name: sample-plugin
+  schedulerName: sample-scheduler
+  plugins:
+    preFilter:
+      enabled:
+      - name: "sample-plugin"
+    filter:
+      enabled:
+      - name: "sample-plugin"
+
+
+其中最重要的部分就是在 profiles 中对插件的配置，在 `plugins` 属性中指定需要启动或禁用的插件，会和默认的插件进行合并，然后还可以通过 `pluginConfig` 配置插件的传递的参数，我们这里使用的插件配置了参数，这里我们可以在 `pluginConfig` 下面的 `args` 进行配置。
+
+有了这个配置文件过后，我们就可以直接通过调度器的 `--config` 参数来接收上面的配置文件，这里我们可以直接用一个 ConfigMap 来接收，然后挂载到我们的调度器中，要运行到 Kubernetes 集群中去，当然需要把我们调度器打包成一个 Docker 镜像，`Dockerfile` 文件如下所示：
+# Build the scheduler binary
+FROM golang:1.16 as builder
+
+RUN apt-get -y update && apt-get -y install upx
+
+WORKDIR /workspace
+# Copy the Go Modules manifests
+COPY go.mod go.mod
+COPY go.sum go.sum
+
+# Copy the go source
+COPY main.go main.go
+COPY pkg/ pkg/
+
+# Build
+ENV CGO_ENABLED=0
+ENV GOOS=linux
+ENV GOARCH=amd64
+ENV GO111MODULE=on
+ENV GOPROXY="https://goproxy.cn"
+
+# cache deps before building and copying source so that we don't need to re-download as much
+# and so that source changes don't invalidate our downloaded layer
+RUN go mod download && \
+    go build -a -o sample-scheduler main.go && \
+    upx sample-scheduler
+
+FROM busybox:1.28.4
+COPY --from=builder /workspace/sample-scheduler /usr/local/bin/sample-scheduler
+
+

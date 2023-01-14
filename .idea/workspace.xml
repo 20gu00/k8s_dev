@@ -7,9 +7,7 @@
     <list default="true" id="9c7d2ff7-67bf-407d-a83e-647f1e53b621" name="变更" comment="变更">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/admission_webhook/admission-registry/admission-registry.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/admission_webhook/admission-registry/admission-registry.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/admission_webhook/admission-registry/tls/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/admission_webhook/admission-registry/tls/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/admission_webhook/admission-registry/tls/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/admission_webhook/admission-registry/tls/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/admission_webhook/admission-registry/tls/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/admission_webhook/admission-registry/tls/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scheduler-plugin/file" beforeDir="false" afterPath="$PROJECT_DIR$/scheduler-plugin/file" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
