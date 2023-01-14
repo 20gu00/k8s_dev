@@ -1,3 +1,31 @@
+#  init容器操作集群资源对象
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admission-registry-sa
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: admission-registry-role
+rules:
+  - verbs: ["*"]
+    resources: ["validatingwebhookconfigurations", "mutatingwebhookconfigurations"]
+    apiGroups: ["admissionregistration.k8s.io"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admission-registry-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admission-registry-role
+subjects:
+  - kind: ServiceAccount
+    name: admission-registry-sa
+    namespace: default
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -13,6 +41,7 @@ spec:
       labels:
         app: admission-registry
     spec:
+      #serviceAccountName: admission-registry-sa
 #      initContainers:
 #        - name: xxx
 #          image: xxx
@@ -22,6 +51,19 @@ spec:
 #            - name: webhook-certs
 #              mountPath: /etc/webhook/certs
 #              readOnly: true
+#          env:
+#            - name: WEBHOOK_NAMESPACE
+#              value: default
+#            - name: MUTATE_CONFIG
+#              value: admission-registry-mutate
+#            - name: VALIDATE_CONFIG
+#              value: admission-registry
+#            - name: WEBHOOK_SERVICE
+#              value: admission-registry
+#            - name: VALIDATE_PATH
+#              value: /validate
+#            - name: MUTATE_PATH
+#              value: /mutate
       containers:
         - name: whitelist
           image: 010101010007/admission-registry:v0.0.3
@@ -54,3 +96,12 @@ spec:
       targetPort: 443
   selector:
     app: admission-registry
+    
+
+#  对于证书轮换的情况，对于向服务器容器提供此证书所采用的每种方法，方法将有所不同：
+#  重启 pod相当于换了个新的生命周期
+#
+#- 如果我们使用的是 emptyDir 卷，则方法将是仅重新启动 Webhook Pod。由于 emptyDir 卷是临时的，并且绑定到 Pod 的生命周期，因此在重新启动时，将生成一个新证书并将其提供给服务器容器。如果已经存在配置，则将在配置中添加新的 CA bundle。
+#- 如果我们正在使用 Secret 卷，则在重新启动 Webhook Pod 时，可以检查 Secret 中现有证书的有效期，以决定是将现有证书用于服务器还是创建新证书。
+#
+#  在这两种情况下，都需要重新启动 Webhook Pod 才能触发证书轮换/续订过程。何时需要重新启动 Webhook 容器以及如何重新启动 Webhook 容器，将取决于实际情况。可能的几种方法可以使用Cronjob、controller 等来实现。
