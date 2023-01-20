@@ -25,6 +25,7 @@ type MyCSIDriver struct {
 			(NodeStageVolume针对块设备只能挂在一次,不满足volume可以同时挂在进多个pod,多个容器,于是这一阶段是讲volume格式化成文件系统,然后挂在到某个临时目录中)
 		    (NodePulishVolume是将临时目录挂载进pod的对应的目录中,所以总的来看k8s是直接操作pv,pvc是面向用户,品比了复杂的存储实现逻辑,实现技术和关注点的解耦)
 	*/
+
 	name          string
 	vendorVersion string
 	nodeID        string
@@ -71,7 +72,7 @@ func NewNodeServer(d *MyCSIDriver) *NodeServer {
 	}
 }
 
-// 初始化 csi driver
+// 初始化 csi driver 驱动程序
 func (driver *MyCSIDriver) InitializeDriver(name, vendorVersion, nodeID string) error {
 	glog.V(3).Infof("mycsi: InitializeDriver. name: %s, version: %v, nodeID: %s", name, vendorVersion, nodeID)
 	if name == "" {
@@ -115,6 +116,7 @@ func (driver *MyCSIDriver) InitializeDriver(name, vendorVersion, nodeID string) 
 	// add csi-node capability
 	driver.AddNodeServiceCapabilities(ns)
 
+	// 初始化 csi driver 即 csi-identity csi-controller csi-node
 	driver.ids = NewIdentityServer(driver)
 	driver.ns = NewNodeServer(driver)
 	driver.cs = NewControllerServer(driver)
@@ -130,6 +132,8 @@ func (driver *MyCSIDriver) PluginInitialize() error {
 // csi driver run
 func (driver *MyCSIDriver) Run(endpoint string) {
 	glog.Infof("Driver: %v version: %v", driver.name, driver.vendorVersion)
+	// 创建一个 grpc 的 server           启动 阻塞
+	// csi 存储体系中的 csi 存储插件都是 grpc 实现的服务
 	s := NewNonBlockingGRPCServer()
 	s.Start(endpoint, driver.ids, driver.cs, driver.ns)
 	s.Wait()

@@ -19,7 +19,7 @@ Kubernetes CSI 存储体系主要由两部分组成：
 (类似一个k8s的外部controller,watch api-server监听相应的资源的变化,调用下面的csi插件来实现存储的管理操作)
 
     Driver registra：一个 Sidecar 容器，向 Kubernetes 注册 CSI Driver(驱动)，添加 Drivers 的一些信息
-    External provisioner：也是一个 Sidecar 容器，watch Kubernetes 的 PVC对象，调用对应 CSI 进行 Volume创建、删除等操作
+    External provisioner：也是一个 Sidecar 容器，watch Kubernetes 的 PVC对象，调用对应 CSI(controller) 进行 Volume创建、删除等操作
     External attacher：一个 Sidecar 容器，watch Kubernetes 系统里的 VolumeAttachment 对象，调用对应 CSI 的 ControllerPublish 和 ControllerUnpublish 操作来完成对应的 Volume 的 Attach/Detach。而 Volume 的 Mount/Unmount 阶段并不属于外部组件，当真正需要执行 Mount 操作的时候，kubelet 会去直接调用下面的 CSI Node 服务来完成 Volume 的 Mount/UnMount 操作。
 
 2.CSI 存储插件: 这部分正是开发者需要实现的 CSI 插件部分，都是通过 gRPC 实现的服务，一般会用一个二进制文件对外提供服务，主要包含三部分：CSI Identity、CSI Controller、CSI Node。
