@@ -29,7 +29,7 @@ func (cs *ControllerServer) ControllerExpandVolume(ctx context.Context, req *csi
 
 	volumeID := req.GetVolumeId()
 	if volumeID == "" {
-		return nil, status.Error(codes.InvalidArgument, "VolumeID is not present")
+		return nil, status.Error(codes.InvalidArgument, "VolumeID不存在")
 	}
 
 	// newSize := int(req.GetCapacityRange().GetRequiredBytes() / GiB)
@@ -37,12 +37,12 @@ func (cs *ControllerServer) ControllerExpandVolume(ctx context.Context, req *csi
 	// Perform Actual Volume Expansion using your API
 
 	return &csi.ControllerExpandVolumeResponse{
-		CapacityBytes:         req.GetCapacityRange().GetRequiredBytes(),
+		CapacityBytes: req.GetCapacityRange().GetRequiredBytes(),
+		// 是否需要扩展volume容量
 		NodeExpansionRequired: false,
 	}, nil
 }
 
-// ControllerGetCapabilities implements the default GRPC callout.
 // ControllerGetCapabilities csi-controller 的 capbility(例如. 插件可能未实现 GetCapacity、Snapshotting)
 func (cs *ControllerServer) ControllerGetCapabilities(ctx context.Context, req *csi.ControllerGetCapabilitiesRequest) (*csi.ControllerGetCapabilitiesResponse, error) {
 	glog.V(4).Infof("ControllerGetCapabilities called with req: %#v", req)
