@@ -132,24 +132,33 @@ func (driver *MyCSIDriver) PluginInitialize() error {
 // csi driver run
 func (driver *MyCSIDriver) Run(endpoint string) {
 	glog.Infof("Driver: %v version: %v", driver.name, driver.vendorVersion)
-	// 创建一个 grpc 的 server           启动 阻塞
+	// 创建一个 grpc server 的接口         启动 阻塞
 	// csi 存储体系中的 csi 存储插件都是 grpc 实现的服务
 	s := NewNonBlockingGRPCServer()
 	s.Start(endpoint, driver.ids, driver.cs, driver.ns)
 	s.Wait()
 }
 
+// 校验 csi-controller 服务的请求
+// csi.ControllerServiceCapability_RPC_CREATE_DELETE_VOLUME
 func (driver *MyCSIDriver) ValidateControllerServiceRequest(c csi.ControllerServiceCapability_RPC_Type) error {
 	glog.V(3).Infof("mycsi: ValidateControllerServiceRequest")
+	// 传入的是未知的 csi-controller 的 capability
 	if c == csi.ControllerServiceCapability_RPC_UNKNOWN {
 		return nil
 	}
+
+	// csi driver 的 csi-controller capability
 	for _, cap := range driver.cscap {
+		// 返回 csi-controller  capability 的结构体指针,拿到它的 Type 成员,csi.ControllerServiceCapability_RPC_Type类型
+		// 如果这个传入的 capability 存在 csi-controller 的 capability 中,即可返回nil
 		if c == cap.GetRpc().Type {
 			return nil
 		}
 	}
-	return status.Error(codes.InvalidArgument, "Invalid controller service request")
+
+	// grpc 调用 csi-controller 失败
+	return status.Error(codes.InvalidArgument, "无效的 csi-controller 服务的请求")
 }
 
 func (driver *MyCSIDriver) AddVolumeCapabilityAccessModes(vc []csi.VolumeCapability_AccessMode_Mode) error {

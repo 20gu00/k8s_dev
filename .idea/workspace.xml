@@ -5,10 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9c7d2ff7-67bf-407d-a83e-647f1e53b621" name="变更" comment="变更">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/csi/csi-demo-new/csi-plugin/csi.go" beforeDir="false" afterPath="$PROJECT_DIR$/csi/csi-demo-new/csi-plugin/csi.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/csi/csi-demo-new/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/csi/csi-demo-new/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/csi/csi-demo-new/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/csi/csi-demo-new/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/csi/file" beforeDir="false" afterPath="$PROJECT_DIR$/csi/file" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/csi/csi-demo-new/csi-plugin/csi_controller_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/csi/csi-demo-new/csi-plugin/csi_controller_server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/csi/csi-demo-new/csi-plugin/no_block_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/csi/csi-demo-new/csi-plugin/no_block_server.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
