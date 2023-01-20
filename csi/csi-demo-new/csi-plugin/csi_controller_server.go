@@ -178,14 +178,18 @@ func (cs *ControllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 
 	*/
 
-	// Perform Volume create using the characteristics defined above. Ensure you collect a unique ID of the volume.
+	// 创建 volume 逻辑,比如判断 volume 是否已经存在
+	// volume id要唯一
+	// 可以rand now uuid.NewUUID.String()
 	ID := "volume id collected"
 
 	return &csi.CreateVolumeResponse{
 		// 返回 volume
+		// XXX 可忽略
 		Volume: &csi.Volume{
 			VolumeId:      ID,
 			CapacityBytes: 0,
+			// 放在自动创建的 spec.csi.volumeAttributes
 			VolumeContext: parameters,
 		},
 	}, nil
@@ -196,13 +200,14 @@ func (cs *ControllerServer) DeleteVolume(ctx context.Context, req *csi.DeleteVol
 
 	glog.V(3).Infof("delete volume req: %v", req)
 
+	// 通过卷id删除
 	volumeID := req.GetVolumeId()
-
 	if volumeID == "" {
-		return nil, status.Error(codes.InvalidArgument, "VolumeID not present")
+		return nil, status.Error(codes.InvalidArgument, "VolumeID为空")
 	}
-
-	// Perform volume deletion using the volume ID
+	// 删除卷的逻辑 claim volume 删除
+	// 比如 hostpath 那就是删除目录,还有将 volume 删除,往往会有个切片管理所有的 volume
+	// s.Volumes = append(s.Volumes[:i], s.Volumes[i+1:]...)  删除第i个
 
 	return &csi.DeleteVolumeResponse{}, nil
 }
