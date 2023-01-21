@@ -32,4 +32,4 @@ ping某个pod的ip,或者其他节点的cni0或者其他节点的pod比如10.244
 
 
 
-veth-pair就是用来实现跨ns的通信
+veth-pair就是用来实现跨ns的通信,两端也是网卡,同一个节点的pod的veth-pair同一个cni0管理

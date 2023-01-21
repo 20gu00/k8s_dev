@@ -1,0 +1,60 @@
+linux bridge
+
+创建网桥
+ip l a br0 type bridge
+
+查看
+brctl show
+
+启动
+ip l s br0 up
+
+创建不同的net ns
+ip netns a ns1
+ip netns a ns2
+
+
+
+
+接下来就是将veth-pair两端填充到网桥和ns(模拟pod的ns)
+
+创建veth-pair设备
+br-veth0 插在br0网桥
+ip l a veth0 type veth peer br-veth0
+ip l a veth1 type veth peer br-veth1
+
+set
+将veth一端插入ns
+ip l s veth0 netns ns1
+ip l s veth1 netns ns2
+
+暂时进入ns1名称空间执行命令
+ip netns exec ns1 ip a
+
+将veth一端插入br(root ns)
+ip l s br-veth0 master br0
+ip l s br-veth1 master br0
+
+ip a(root ns)
+br-veth0 1 都在这个net ns
+
+查看网桥的接口
+brctl show
+
+进入名称空间
+ip netns exec ns1 bash(ip netns exec ns1 ip l s veth0 up)
+(执行一些命令)
+启动相应的网卡 ifconfig eth0 up
+exit
+
+ip netns exec ns2 ip l s veth1 up
+(直接执行ifconfig查看的是开启的网卡)
+
+
+ip netns exec ns1 bash
+配置eth0 ip地址 ifconfig eth0 192.168.23.1.2/24
+(ns2同理)(ip a a 192.168.1.3/24 dev veth0也行)
+
+
+进入ns2执行ping 192.168.1.2
+前提启动环回网卡ifconfig lo up
