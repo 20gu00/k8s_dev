@@ -58,3 +58,43 @@ ip netns exec ns1 bash
 
 进入ns2执行ping 192.168.1.2
 前提启动环回网卡ifconfig lo up
+
+启动br0接口对应的网卡
+ip l s br-veth0 up
+ip l s br-veth1 up
+
+
+测试
+tcpdump -pne -i br-eth0
+ns1中ping 192.168.1.2(ns2) (网卡设备都启动,一般这些都是可达的)
+
+在ns1 tcpdump -pne-i br-eth0没有接收到包
+也就是ns1能和ns2连通,网桥根据学习也知道了两个ns的eth0的mac,也就是连通和mac学习都没问题,但是ns只有发出去的包,却没有响应回来的包,单向的
+被drop了,丢弃,查看iptables-save | grep drop
+解决:设置转发 sysctl net.ipv4.ip_forward=1
+或者 iptables -A FORWARD -i br0 -j ACCEPT
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+一个pod中多个容器,可以lo访问
