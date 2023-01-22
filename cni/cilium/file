@@ -10,3 +10,42 @@ https://docs.cilium.io/en/v1.10/gettingstarted/k8s-install-default/
 cilium特点越过,不适用kube-proxy iptable而是使用自己的hash表处理网络流量,cilium的proxy强大
 安装过程有问题,cilium uninstall
 准备的集群kubeadm init时 --skip-phases=addon/kube-proxy --ignore-preflight-errors=Swap,做个快照,暂时不用安装flannel等cni
+
+
+VXLAN虚拟扩展局域网,关联性名词大二层,也就是通信的源和目标是同一个网段,不管你用什么技术实现
+不然请求时即使是同一个网段,很有可能请求的是路由器的网段先,也就是在路由的广播域,也就是寻求mac,报文很可能到路由器就停了,也就是路由器本身就有隔断arp的功能
+所以总是通过网管一层一层找不够好,直接实现一个二层网络
+
+
+
+VXLAN知识:
+VXLAN（Virtual eXtensible Local Area Network，虚拟扩展局域网），是由IETF定义的NVO3（Network Virtualization over Layer 3）标准技术之一，是对传统VLAN协议的一种扩展。VXLAN的特点是将L2的以太帧封装到UDP报文（即L2 over L4）中，并在L3网络中传输。
+VXLAN本质上是一种隧道技术，在源网络设备与目的网络设备之间的IP网络上，建立一条逻辑隧道，将用户侧报文经过特定的封装后通过这条隧道转发。从用户的角度来看，接入网络的服务器就像是连接到了一个虚拟的二层交换机的不同端口上（可把蓝色虚框表示的数据中心VXLAN网络看成一个二层虚拟交换机），可以方便地通信。
+其实就是主机散布在网络各地,互相的访问需要经过层层路由,这部分就是网络运营商提供的,现在采用技术将这些整合起来,实现隧道,看起来就是个大的二层交换机,将原本的网络承载做成一个逻辑交换机
+
+
+
+
+在两台主机之间实现VXLAN网络,VETP是VXLAN设备,每台机器有一个VETP,VTEP通过它们的ip进行通信
+VTEP（VXLAN Tunnel Endpoints，VXLAN隧道端点）是VXLAN网络的边缘设备，是VXLAN隧道的起点和终点，VXLAN对用户原始数据帧的封装和解封装均在VTEP上进行。
+描述:两台主机各有一张网卡ens33互连的,分别是192.168.23.10和192.168.23.11,两台主机都属于VXLAN0网络(都有vxlan0网卡),各有一张VETP设备(vxlan的端点),分别是10.20.1.2/24和10.20.1.3/24
+也就是形成一个二层网络,同一个网段
+配置:
+    1.创建一个网络设备vxlan0,类型vxlan,id是vxlan network identifier标识(192.168.23.10配置)(flannel默认4782)
+    (就是配置ens33 ens33相当于两个VTEP设备通信承载网)
+    ip link add vxlan0 type vxlan id 5 dstport 4789 remote 192.168.23.11 local 192.168.23.10 dev ens33
+    2.给这个vxlan0添加一个ip
+    ip addr add 10.20.1.2/24 dev vxlan0
+    3.启动网卡,启动设备
+    ip link set vxlan0 up
+    (两一个主机也这么做,如果多个邻居可以设置个中间站,都连接中间站,报文丢给它,由它处理)
+    (都亮亮互连叫做full mesh,缺点就是复杂)
+
+测试:比如其中一个VTEP访问目标,src_dst_ip有了,src_mac有了,缺乏目标mac
+(路由器看ip,分发到相应的ip域,交换机看mac)
+(将从VTEP出发的报文伪装,打包成应用层,然后后边的网络设备在添加ip头mac头等,ens33发出,经过网络设备路由器等)
+(所以说你基本上可以看成是两个主机的ens33在通信的,只要包送到目标主机即可,然后解包,发送到目标即可)
+(VTEP做封包解包)
+(VXLAN是有代价的,就是解包封包)
+
+oberlay,把lay类比成承载网,大二层交换机,那么就可以over这个lay进行通信

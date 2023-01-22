@@ -1,0 +1,11 @@
+cilium安装默认就是VXLAN模式
+calico flannel完全依赖域linux网络子系统
+cilium突破这一点
+
+eBPF Extended Berkeley Packet Filter 网络数据包过滤
+
+eBPF host routing:想跳过更多的主机的网络协议栈的处理,iptables等,比如pod中的流量要出去,到veth-pair设备的一段eth0,数据包直接到本机的ens33网卡,这样就能直接和外界通信,外接进来到ens33,直接将数据包发送到pod的eth0
+场景:两个pod通信,发出报文和响应报文,源pod发出报文经过自己的eth0然后和对应的主机的cni0上的interface,也就是某张网卡,然后直接由eBPF发送到目标的pod的eth0网卡,目标的pod响应报文经过自己的eth0和对应的pair网卡,eBPF发送报文到源pod的eth0
+
+
+cilium同节点的pod的通信
