@@ -8,4 +8,15 @@ eBPF host routing:想跳过更多的主机的网络协议栈的处理,iptables�
 场景:两个pod通信,发出报文和响应报文,源pod发出报文经过自己的eth0然后和对应的主机的cni0上的interface,也就是某张网卡,然后直接由eBPF发送到目标的pod的eth0网卡,目标的pod响应报文经过自己的eth0和对应的pair网卡,eBPF发送报文到源pod的eth0
 
 
-cilium同节点的pod的通信
+cilium同节点的pod的通信:
+同节点pod1 ping pod2,pod1的eth0必须是有发有收才完整
+tcpdump抓包eth0和对应的pair网卡(源pod和目标pod)
+pod1:10.0.2.91/32 pod2:10.0.2.54 cilium_host:10.0.2.75
+pod1发出报文,发现目标不适合自己同一个网段,走路由,看路由表,一行是dst10.0.2.75一行是0.0.0.0,匹配0.0.0.0的gateway10.0.2.75,src_dst_ip和src_dst_mac齐全,发送给cilium_host网卡,第一条是网关,路由器
+cilium_host查看路由表,发现目标ip和自己相连(veth-pair),直接将数据包丢过去了
+进入pod查看路由表,dst0.0.0.0的网关是10.0.2.75(cilium host)(cni 路由器)  dst10.0.2.75的gateway0.0.0.0也就是自身,同一个网段,跟cni0网桥(flannel)大致的逻辑
+
+
+
+32掩码那么都不在同一个网段
+不在同一个网段,直接走三层(ip层)
