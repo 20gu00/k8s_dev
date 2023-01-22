@@ -1,0 +1,12 @@
+目前cilium是最火的cni
+核心使用ebpf
+v1.10
+
+https://docs.cilium.io/en/v1.10/gettingstarted/k8s-install-default/
+准备一个kubernetes集群,去github.com/cilium/cilium-cli安装相应版本的cli工具(v1.0,看log)
+
+
+
+cilium特点越过,不适用kube-proxy iptable而是使用自己的hash表处理网络流量,cilium的proxy强大
+安装过程有问题,cilium uninstall
+准备的集群kubeadm init时 --skip-phases=addon/kube-proxy --ignore-preflight-errors=Swap,做个快照,暂时不用安装flannel等cni

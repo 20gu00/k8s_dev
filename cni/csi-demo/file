@@ -22,3 +22,8 @@ ens33 网络接口,发出的包可以前往多个目标(gateway)
 设置目标容器的节点ip作为gateway 添加路由记录 route add -net 172.18.0.0/16 gw 192.168.23.2
 (一般来说也是ens33,设置gw,设置下一跳,目标容器的主机ip)
 数据包到了目标主机上,mac变更,ip不变,匹配路由表,docker0网桥,下一跳到docker0网桥,即可通信
+
+
+
+
+github上有一个minicni,go实现
