@@ -6,7 +6,7 @@ eBPF Extended Berkeley Packet Filter 网络数据包过滤
 
 eBPF host routing:想跳过更多的主机的网络协议栈的处理,iptables等,比如pod中的流量要出去,到veth-pair设备的一段eth0,数据包直接到本机的ens33网卡,这样就能直接和外界通信,外接进来到ens33,直接将数据包发送到pod的eth0
 场景:两个pod通信,发出报文和响应报文,源pod发出报文经过自己的eth0然后和对应的主机的cni0上的interface,也就是某张网卡,然后直接由eBPF发送到目标的pod的eth0网卡,目标的pod响应报文经过自己的eth0和对应的pair网卡,eBPF发送报文到源pod的eth0
-
+也就是一次连接报文有request reply,目标的pod所在的节点的cni(cilium_host)的pair拿不到request包(calico可以)
 
 cilium同节点的pod的通信:
 同节点pod1 ping pod2,pod1的eth0必须是有发有收才完整
@@ -20,3 +20,10 @@ cilium_host查看路由表,发现目标ip和自己相连(veth-pair),直接将数
 
 32掩码那么都不在同一个网段
 不在同一个网段,直接走三层(ip层)
+
+
+pwru cilium包分析工具
+
+
+
+
