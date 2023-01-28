@@ -18,3 +18,12 @@ make docker-build IMG=010101010007/mysql-single:v1
 make docker-push IMG=010101010007/mysql-single:v1
 make deploy IMG=010101010007/mysql-single:v1
 kubectl logs single-controller-manager-b868db5cf-r7n5v -n single-system -c manager
+
+自定义输出列,priority大于0则需要-o wide列出
+kubectl get crd资源
+更多的字段信息https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/#additional-printer-columns
+
+
+
+
+
