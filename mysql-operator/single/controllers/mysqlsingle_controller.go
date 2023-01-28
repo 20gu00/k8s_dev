@@ -62,6 +62,12 @@ func (r *MysqlSingleReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error)
 	svc.Name = mysqlSingle.Name
 	svc.Namespace = mysqlSingle.Namespace
 
+	// 处理conflict背景:读取resource是从缓存中读取,写操作是apiserver写入etcd(原子),同步etcd信息到缓存不是原子.
+	// 场景:两个event连续出现,向apiserver提交了update或者patch更新resource,写入etcd也就是原子更新了etcd,但来不及informer同步缓存,如果这时紧接着又读取缓存中的resource发现resource version不对,会继续向apiserver发出更新请求,这时候在向api server更新etcd,会被etcd拒绝这次更新.
+	// 这就是资源conflict,kubernetes为了提高吞吐量,很多地方都采用了乐观锁
+	// 解决方案也很简单，在Update时，如果发现是ConflictError就使用Requeue: True重新执行这个Event，或者在Conflict发生时使用Kubernetes提供的retry.RetryOnConflict。但是，在retry时，注意请根据新Get到的资源版本重新计算状态，而不是Get了一个新的资源对象然后直接拿之前基于旧资源对象算出的状态去Update。个人觉得既然都要基于新的资源对象重新计算状态了，干脆Requeue是最好的。
+	// retry是如果你担心你的update、get、list、create等操作发生错误，系统会自动帮你重试,其实主要就是针对resource update conflict问题的
+
 	//重试
 	if err := retry.RetryOnConflict(retry.DefaultRetry, func() error {
 		//ctx crd资源的client 处理的资源对象 调谐函数
@@ -69,7 +75,7 @@ func (r *MysqlSingleReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error)
 			//调谐函数
 			MutateSvc(&mysqlSingle, &svc)
 			//设置关系,crd资源控制的svc
-			//owner 被控制的资源对象 注册表
+			//owner 被控制的资源对象 注册表,注册进注册表客户端才能获取到该资源进行操作,其实由个最上层的注册表将全部资源的注册表进行汇总
 			return controllerutil.SetControllerReference(&mysqlSingle, &svc, r.Scheme)
 		})
 		log.Info("调谐结果Result", "Service", or)
@@ -95,7 +101,7 @@ func (r *MysqlSingleReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error)
 		log.Info("createorupdate result", "Deployment", or)
 		return err
 	}); err != nil {
-		//调谐失败
+		//调谐失败,重试,reconcile
 		return ctrl.Result{}, err
 	}
 
