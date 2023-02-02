@@ -15,7 +15,7 @@ import (
 // 非阻塞的 server 的 interface
 // server 本身并不阻塞,不像 gin 的 http server
 type NonBlockingGRPCServer interface {
-	// 启动服务在endpoint
+	// 启动服务在endpoint,endpoint处提供服务 暴露服务
 	Start(endpoint string, ids csi.IdentityServer, cs csi.ControllerServer, ns csi.NodeServer)
 	// 阻塞
 	Wait()

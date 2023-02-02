@@ -17,6 +17,7 @@ const (
 	preFilterStateKey = "PreFilter" + Name
 )
 
+// prefilter filter
 // 实现一个prefilter 插件,模仿scheduler自带的
 // prefilterplugin的interface
 var _ framework.PreFilterPlugin = &Sample{}
