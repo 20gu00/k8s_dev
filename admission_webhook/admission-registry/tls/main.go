@@ -302,6 +302,7 @@ func InitKubernetesCli() (*kubernetes.Clientset, error) {
 		config *rest.Config
 		err    error
 	)
+	// 集群内部
 	if config, err = rest.InClusterConfig(); err != nil {
 		return nil, err
 	}

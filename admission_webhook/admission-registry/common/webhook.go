@@ -83,7 +83,7 @@ func (w *WebhookSrv) Handler(writer http.ResponseWriter, request *http.Request) 
 
 	// validate mutate请求的数据(交互,与admission controller之间,请求响应都是AdmissionReview)
 	// 数据编码
-	//准入控制器发送request也就是AdmissionRequstReview给我们admission webhook,反之就是admissionReponseReview
+	// (其实都是admission review)准入控制器发送request也就是AdmissionRequstReview给我们admission webhook,反之就是admissionReponseReview
 
 	//var admissionResponse *admissionV1.AdmissionResponse
 	admissionResponse := new(admissionV1.AdmissionResponse)
@@ -92,6 +92,7 @@ func (w *WebhookSrv) Handler(writer http.ResponseWriter, request *http.Request) 
 	if _, _, err := deserializer.Decode(body, nil, &requestAdmissionReview); err != nil {
 		klog.Error("未能正确解码body成admissionReview数据")
 		admissionResponse = &admissionV1.AdmissionResponse{
+			// allow允许放行
 			Result: &metav1.Status{
 				Code:    http.StatusInternalServerError,
 				Message: err.Error(),

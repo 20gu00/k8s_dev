@@ -1,3 +1,4 @@
 kubectl apply -f crd.yaml
-namespace级别 GVR
+crd是namespace级别 GVR
 /apis/stable/example.com/v1/namespace/*/crontabs/
+exec也是   xxx/exec?command=xxx

@@ -288,3 +288,123 @@ upx压缩包
 
 
 logs -f
+
+
+
+
+
+
+
+
+## 测试
+
+接下来我们首先创建如下所示的两个资源对象：
+
+```yaml
+# test-deploy1.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-deploy1
+spec:
+  selector:
+    matchLabels:
+      app: test1-mutate
+  template:
+    metadata:
+      labels:
+        app: test1-mutate
+    spec:
+      containers:
+        - name: mutate
+          image: docker.io/nginx:1.7.9
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-svc1
+spec:
+  selector:
+    app: test1-mutate
+  ports:
+    - port: 80
+      targetPort: 80
+  type: ClusterIP
+```
+
+由于上面的 Deployment 和 Service 没有添加任何的 annotation，所以正常通过上面我们的 mutate 这个准入控制器过后会被添加上一个 annotion：
+
+```yaml
+$ kubectl apply -f test-deploy1.yaml
+deployment.apps/test-deploy1 created
+service/test-svc1 created
+$ kubectl get deploy test-deploy1 -o yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    io.ydzs.admission-registry/status: mutated
+  creationTimestamp: "2021-01-25T08:27:28Z"
+  ......
+$ kubectl get svc test-svc1 -o yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    io.ydzs.admission-registry/status: mutated
+  creationTimestamp: "2021-01-25T08:27:28Z"
+......
+```
+
+可以看到创建的 Deployment 和 Service 都被添加了一个 `io.ydzs.admission-registry/status: mutated` 的 annotation。
+
+接下来再创建一个如下所示的资源对象：
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-deploy2
+  annotations:
+    io.ydzs.admission-registry/mutate: "no"
+spec:
+  selector:
+    matchLabels:
+      app: test2-mutate
+  template:
+    metadata:
+      labels:
+        app: test2-mutate
+    spec:
+      containers:
+        - name: mutate
+          image: docker.io/nginx:1.7.9
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+```
+
+由于该资源对象中本身就包含一个 `io.ydzs.admission-registry/mutate: "no"` 的 annotation，所以正常创建后不会被添加新的 annotation 了：
+
+```bash
+$ kubectl apply -f test-deploy2.yaml
+deployment.apps/test-deploy2 created
+$ kubectl get deploy test-deploy2 -o yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    io.ydzs.admission-registry/mutate: "no"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{"io.ydzs.admission-registry/mutate":"no"},"name":"test-deploy2","namespace":"default"},"spec":{"selector":{"matchLabels":{"app":"test2-mutate"}},"template":{"metadata":{"labels":{"app":"test2-mutate"}},"spec":{"containers":[{"image":"docker.io/nginx:1.7.9","imagePullPolicy":"IfNotPresent","name":"mutate","ports":[{"containerPort":80}]}]}}}}
+  creationTimestamp: "2021-01-25T09:15:56Z"
+  ......
+```
+
+到这里就成功验证了 Mutate 这个准入控制器，很多时候可能不只是单纯的添加一个 annotation，很有可能是添加一个容器，添加一个环境变量，或者 volumes，这些实现方式都是一样的了。
+
