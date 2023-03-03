@@ -8,3 +8,5 @@ k8s二开库
 4.admissionWebhook的开发  
 5.k8s的调度器源码分析和开发调度插件  
 6.cni csi
+
+k8s远吗阅读
